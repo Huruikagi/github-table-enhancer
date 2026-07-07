@@ -2,6 +2,9 @@
 
 ## Repository workflow
 
+- Before starting meaningful work on a branch with an upstream, fetch and fast-forward it when the worktree is clean.
+- Use `git pull --ff-only` for this. Do not merge remote changes into a dirty worktree.
+- If the branch cannot fast-forward or the worktree is dirty, report the situation instead of auto-resolving it.
 - After making meaningful changes in this workspace, run the relevant checks before finishing.
 - Commit completed work with a concise message.
 - Push committed work to the configured GitHub remote when the local branch has an upstream.
