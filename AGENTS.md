@@ -7,6 +7,7 @@
 - Push committed work to the configured GitHub remote when the local branch has an upstream.
 - Do not commit or push unfinished experiments unless the user explicitly asks for that.
 - If checks cannot be run or push fails, report the reason clearly.
+- When adding or changing user-visible table behavior, update `docs/e2e-table-fixture.md` as needed so manual Chrome E2E coverage stays current.
 
 ## Project commands
 
