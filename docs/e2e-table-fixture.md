@@ -7,6 +7,12 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Each table should remain readable inside the GitHub Markdown preview.
 - Wide tables should scroll horizontally instead of forcing every column to become narrow.
 - Normal-width tables should still look like regular GitHub Markdown tables.
+- Each enhanced table should show a compact Freeze control above the table.
+- Opening the Freeze control should show inputs for frozen rows and frozen columns.
+- Setting frozen rows should keep the first N displayed rows visible while scrolling vertically.
+- When frozen rows are enabled, long tables may scroll vertically inside the table wrapper.
+- Setting frozen columns should keep the first N left columns visible while scrolling horizontally.
+- Reset should return both freeze values to `0` and remove sticky row and column behavior.
 
 ## Wide Release Matrix
 

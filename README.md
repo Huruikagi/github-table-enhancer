@@ -43,6 +43,7 @@ After rebuilding, reload the extension from `chrome://extensions/`.
 ## Current Behavior
 
 Markdown preview tables are wrapped in a horizontal scroll container so long cell content does not force every column to become narrow.
+Each table also gets a compact Freeze control for temporarily freezing the first N displayed rows and the first N left columns.
 
 ## License
 

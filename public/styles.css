@@ -6,6 +6,72 @@
   scrollbar-gutter: stable;
 }
 
+.github-table-enhancer-scroll[data-github-table-enhancer-frozen-rows="true"] {
+  max-height: min(70vh, 640px);
+  overflow: auto;
+}
+
+.github-table-enhancer-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-end: 6px;
+  min-width: max-content;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+.github-table-enhancer-controls-toggle,
+.github-table-enhancer-controls-panel button {
+  appearance: none;
+  background: var(--button-default-bgColor-rest, var(--color-btn-bg, #f6f8fa));
+  border: 1px solid var(--button-default-borderColor-rest, var(--color-btn-border, #d0d7de));
+  border-radius: 6px;
+  color: var(--fgColor-default, var(--color-fg-default, #24292f));
+  cursor: pointer;
+  font: inherit;
+  line-height: 20px;
+  padding: 3px 8px;
+}
+
+.github-table-enhancer-controls-toggle:hover,
+.github-table-enhancer-controls-panel button:hover {
+  background: var(--button-default-bgColor-hover, var(--color-btn-hover-bg, #f3f4f6));
+}
+
+.github-table-enhancer-controls-panel {
+  align-items: center;
+  background: var(--bgColor-default, var(--color-canvas-default, #ffffff));
+  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
+  border-radius: 6px;
+  box-shadow: var(--shadow-floating-small, 0 8px 24px rgb(140 149 159 / 20%));
+  display: flex;
+  gap: 8px;
+  margin-inline-start: 8px;
+  padding: 6px;
+}
+
+.github-table-enhancer-controls-panel label {
+  align-items: center;
+  color: var(--fgColor-muted, var(--color-fg-muted, #57606a));
+  display: flex;
+  font-size: 12px;
+  gap: 4px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.github-table-enhancer-controls-panel input {
+  background: var(--bgColor-default, var(--color-canvas-default, #ffffff));
+  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
+  border-radius: 6px;
+  color: var(--fgColor-default, var(--color-fg-default, #24292f));
+  font: inherit;
+  line-height: 20px;
+  padding: 2px 6px;
+  width: 56px;
+}
+
 .markdown-body .github-table-enhancer-scroll > table {
   margin-block: 0;
   min-width: max-content;
