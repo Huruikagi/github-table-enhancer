@@ -83,6 +83,15 @@
   white-space: nowrap;
 }
 
+.github-table-enhancer-scroll > table [data-github-table-enhancer-sticky="true"] {
+  background: var(--bgColor-default, var(--color-canvas-default, #ffffff));
+  background-clip: padding-box;
+  left: var(--gte-sticky-left, auto);
+  position: sticky;
+  top: var(--gte-sticky-top, auto);
+  z-index: var(--gte-sticky-z-index, auto);
+}
+
 .github-table-enhancer-scroll > table td code,
 .github-table-enhancer-scroll > table th code {
   white-space: nowrap;

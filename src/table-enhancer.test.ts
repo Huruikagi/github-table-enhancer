@@ -4,13 +4,53 @@ import {
   enhanceTables,
   findMarkdownContainer,
   isMarkdownBlobPage,
+  startTableEnhancer,
   TABLE_CONTROLS_TAG,
   TABLE_WRAPPER_CLASS,
   wrapTable,
 } from "./table-enhancer";
 
+const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
+const STICKY_TOP_PROPERTY = "--gte-sticky-top";
+const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
+const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
+
 function setPathname(pathname: string): void {
   window.history.replaceState(null, "", pathname);
+}
+
+function renderMarkdownTables(markup: string): void {
+  document.body.innerHTML = `<article class="markdown-body">${markup}</article>`;
+}
+
+function getTable(selector = "table"): HTMLTableElement {
+  const table = document.querySelector(selector);
+
+  if (!(table instanceof HTMLTableElement)) {
+    throw new Error(`Expected ${selector} to match a table`);
+  }
+
+  return table;
+}
+
+function openFreezeControls(): void {
+  document.querySelector<HTMLButtonElement>(`${TABLE_CONTROLS_TAG} button`)?.click();
+}
+
+function getFreezeInput(label: string): HTMLInputElement {
+  const input = document.querySelector<HTMLInputElement>(`input[aria-label='${label}']`);
+
+  if (!(input instanceof HTMLInputElement)) {
+    throw new Error(`Expected ${label} input to be rendered`);
+  }
+
+  return input;
+}
+
+function setFreezeInput(label: string, value: string): void {
+  const input = getFreezeInput(label);
+  input.value = value;
+  input.dispatchEvent(new Event("change"));
 }
 
 describe("isMarkdownBlobPage", () => {
@@ -54,15 +94,10 @@ describe("wrapTable", () => {
   });
 
   it("wraps a table in a horizontal scroll container", () => {
-    document.body.innerHTML = `
-      <article class="markdown-body">
-        <table><tbody><tr><td>wide value</td></tr></tbody></table>
-      </article>
-    `;
-    const table = document.querySelector("table");
+    renderMarkdownTables("<table><tbody><tr><td>wide value</td></tr></tbody></table>");
+    const table = getTable();
 
-    expect(table).toBeInstanceOf(HTMLTableElement);
-    wrapTable(table as HTMLTableElement);
+    wrapTable(table);
 
     const wrapper = document.querySelector(`.${TABLE_WRAPPER_CLASS}`);
     expect(wrapper).toBeInstanceOf(HTMLDivElement);
@@ -72,12 +107,8 @@ describe("wrapTable", () => {
   });
 
   it("does not double-wrap an already enhanced table", () => {
-    document.body.innerHTML = `
-      <article class="markdown-body">
-        <table data-github-table-enhancer="true"></table>
-      </article>
-    `;
-    const table = document.querySelector("table") as HTMLTableElement;
+    renderMarkdownTables('<table data-github-table-enhancer="true"></table>');
+    const table = getTable();
 
     wrapTable(table);
 
@@ -85,44 +116,31 @@ describe("wrapTable", () => {
   });
 
   it("adds controls that apply row and column freeze settings", () => {
-    document.body.innerHTML = `
-      <article class="markdown-body">
-        <table>
-          <tbody>
-            <tr><td>one</td><td>two</td></tr>
-            <tr><td>three</td><td>four</td></tr>
-          </tbody>
-        </table>
-      </article>
-    `;
-    const table = document.querySelector("table") as HTMLTableElement;
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>one</td><td>two</td></tr>
+          <tr><td>three</td><td>four</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
 
     wrapTable(table);
-    document.querySelector<HTMLButtonElement>("gte-table-controls button")?.click();
-    const rowsInput = document.querySelector<HTMLInputElement>("input[aria-label='Frozen rows']");
-    const columnsInput = document.querySelector<HTMLInputElement>(
-      "input[aria-label='Frozen columns']",
-    );
+    openFreezeControls();
+    setFreezeInput("Frozen rows", "1");
+    setFreezeInput("Frozen columns", "1");
 
-    if (!(rowsInput instanceof HTMLInputElement) || !(columnsInput instanceof HTMLInputElement)) {
-      throw new Error("Expected freeze control inputs to be rendered");
-    }
-
-    rowsInput.value = "1";
-    rowsInput.dispatchEvent(new Event("change"));
-    columnsInput.value = "1";
-    columnsInput.dispatchEvent(new Event("change"));
-
-    expect(table.rows[0]?.cells[0]?.style.position).toBe("sticky");
+    expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBe("true");
     expect(
       table.closest<HTMLElement>(`.${TABLE_WRAPPER_CLASS}`)?.dataset.githubTableEnhancerFrozenRows,
     ).toBe("true");
-    expect(table.rows[0]?.cells[0]?.style.top).toBe("0px");
-    expect(table.rows[0]?.cells[0]?.style.left).toBe("0px");
-    expect(table.rows[0]?.cells[0]?.style.zIndex).toBe("4");
-    expect(table.rows[0]?.cells[1]?.style.zIndex).toBe("3");
-    expect(table.rows[1]?.cells[0]?.style.zIndex).toBe("2");
-    expect(table.rows[1]?.cells[1]?.style.position).toBe("");
+    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_TOP_PROPERTY)).toBe("0px");
+    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_LEFT_PROPERTY)).toBe("0px");
+    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("4");
+    expect(table.rows[0]?.cells[1]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("3");
+    expect(table.rows[1]?.cells[0]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("2");
+    expect(table.rows[1]?.cells[1]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
   });
 });
 
@@ -140,17 +158,17 @@ describe("applyTableFreeze", () => {
         </tbody>
       </table>
     `;
-    const table = document.querySelector("table") as HTMLTableElement;
+    const table = getTable();
 
     applyTableFreeze(table, { rows: 1, columns: 1 });
-    expect(table.rows[0]?.cells[0]?.style.position).toBe("sticky");
+    expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBe("true");
 
     applyTableFreeze(table, { rows: 0, columns: 0 });
 
-    expect(table.rows[0]?.cells[0]?.style.position).toBe("");
-    expect(table.rows[0]?.cells[0]?.style.top).toBe("");
-    expect(table.rows[0]?.cells[0]?.style.left).toBe("");
-    expect(table.rows[0]?.cells[0]?.style.zIndex).toBe("");
+    expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_TOP_PROPERTY)).toBe("");
+    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_LEFT_PROPERTY)).toBe("");
+    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("");
   });
 });
 
@@ -161,13 +179,16 @@ describe("enhanceTables", () => {
   });
 
   it("enhances every table inside the Markdown container", () => {
-    document.body.innerHTML = `
-      <article class="markdown-body">
-        <table><tbody><tr><td>one</td></tr></tbody></table>
-        <table><tbody><tr><td>two</td></tr></tbody></table>
-      </article>
+    renderMarkdownTables(`
+      <table><tbody><tr><td>one</td></tr></tbody></table>
+      <table><tbody><tr><td>two</td></tr></tbody></table>
+    `);
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
       <table><tbody><tr><td>outside</td></tr></tbody></table>
-    `;
+    `,
+    );
 
     enhanceTables();
 
@@ -177,11 +198,7 @@ describe("enhanceTables", () => {
 
   it("does nothing outside Markdown blob pages", () => {
     setPathname("/owner/repo/issues/1");
-    document.body.innerHTML = `
-      <article class="markdown-body">
-        <table><tbody><tr><td>issue table</td></tr></tbody></table>
-      </article>
-    `;
+    renderMarkdownTables("<table><tbody><tr><td>issue table</td></tr></tbody></table>");
 
     enhanceTables();
 
@@ -189,14 +206,26 @@ describe("enhanceTables", () => {
   });
 
   it("does not wrap the same table twice when called repeatedly", () => {
-    document.body.innerHTML = `
-      <article class="markdown-body">
-        <table><tbody><tr><td>one</td></tr></tbody></table>
-      </article>
-    `;
+    renderMarkdownTables("<table><tbody><tr><td>one</td></tr></tbody></table>");
 
     enhanceTables();
     enhanceTables();
+
+    expect(document.querySelectorAll(`.${TABLE_WRAPPER_CLASS}`)).toHaveLength(1);
+  });
+
+  it("enhances tables added after the observer starts", async () => {
+    renderMarkdownTables("");
+
+    const observer = startTableEnhancer();
+    document
+      .querySelector(".markdown-body")
+      ?.insertAdjacentHTML(
+        "beforeend",
+        "<table><tbody><tr><td>late table</td></tr></tbody></table>",
+      );
+    await Promise.resolve();
+    observer.disconnect();
 
     expect(document.querySelectorAll(`.${TABLE_WRAPPER_CLASS}`)).toHaveLength(1);
   });
