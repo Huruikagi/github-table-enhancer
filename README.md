@@ -11,7 +11,7 @@ A small Chrome extension that makes wide tables easier to read in GitHub Markdow
 ## Local Install
 
 1. Install dependencies with `pnpm install`.
-2. Build the extension with `pnpm build`.
+2. Build the extension with `pnpm build` for production output, or `pnpm build:dev` for a development build with source maps.
 3. Open `chrome://extensions/`.
 4. Enable Developer mode.
 5. Click **Load unpacked**.
@@ -22,6 +22,7 @@ A small Chrome extension that makes wide tables easier to read in GitHub Markdow
 ```shell
 mise install
 pnpm install
+pnpm build:dev
 pnpm build
 pnpm check
 pnpm lint
