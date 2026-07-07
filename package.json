@@ -14,7 +14,9 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "test": "vitest run",
-    "verify": "pnpm lint && pnpm test && pnpm build"
+    "verify": "pnpm lint && pnpm test && pnpm build",
+    "build:dev": "node scripts/clean.mjs && pnpm check && node scripts/build.mjs --mode development && node scripts/copy-static.mjs",
+    "build:prod": "pnpm build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.2",
