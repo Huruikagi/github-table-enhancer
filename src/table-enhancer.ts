@@ -1,3 +1,7 @@
+import type { VNode } from "preact";
+import { Fragment, h, render } from "preact";
+import { useState } from "preact/hooks";
+
 export const TABLE_WRAPPER_CLASS = "github-table-enhancer-scroll";
 export const TABLE_CONTROLS_TAG = "gte-table-controls";
 export const TABLE_CONTROLS_CLASS = "github-table-enhancer-controls";
@@ -6,7 +10,6 @@ export const TABLE_CONTROLS_TOGGLE_CLASS = "github-table-enhancer-controls-toggl
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 const STICKY_CELL_SELECTOR = "[data-github-table-enhancer-sticky='true']";
 const FROZEN_ROWS_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRows";
-const FREEZE_CHANGE_EVENT = "gte:freeze-change";
 const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
 const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
@@ -16,7 +19,6 @@ type FreezeOptions = {
   columns: number;
 };
 
-type FreezeChangeEvent = CustomEvent<FreezeOptions>;
 type FreezeInputKind = keyof FreezeOptions;
 type StickyCellLayout = {
   cell: HTMLTableCellElement;
@@ -43,155 +45,90 @@ function clampInteger(value: number, min: number, max: number): number {
   return Math.min(Math.max(Math.trunc(value), min), max);
 }
 
-export class TableControlsElement extends HTMLElement {
-  #isOpen = false;
-  #values: FreezeOptions = { rows: 0, columns: 0 };
-  #limits: FreezeOptions = { rows: 0, columns: 0 };
-  #rowsInput: HTMLInputElement | null = null;
-  #columnsInput: HTMLInputElement | null = null;
+type TableControlsProps = {
+  limits: FreezeOptions;
+  onChange: (values: FreezeOptions) => void;
+};
 
-  connectedCallback(): void {
-    this.classList.add(TABLE_CONTROLS_CLASS);
-    this.render();
-  }
-
-  setLimits({ rows, columns }: FreezeOptions): void {
-    this.#limits = { rows, columns };
-    this.setValues(this.#values);
-    this.updateInputLimits();
-  }
-
-  get values(): FreezeOptions {
-    return { ...this.#values };
-  }
-
-  private render(): void {
-    this.replaceChildren();
-
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = TABLE_CONTROLS_TOGGLE_CLASS;
-    toggle.setAttribute("aria-expanded", String(this.#isOpen));
-    toggle.textContent = "Freeze";
-    toggle.addEventListener("click", () => {
-      this.#isOpen = !this.#isOpen;
-      this.render();
-    });
-
-    this.append(toggle);
-
-    if (!this.#isOpen) {
-      return;
-    }
-
-    const panel = document.createElement("div");
-    panel.className = TABLE_CONTROLS_PANEL_CLASS;
-
-    this.#rowsInput = this.createNumberInput("rows", "Frozen rows");
-    this.#columnsInput = this.createNumberInput("columns", "Frozen columns");
-
-    const resetButton = document.createElement("button");
-    resetButton.type = "button";
-    resetButton.textContent = "Reset";
-    resetButton.addEventListener("click", () => {
-      this.setValues({ rows: 0, columns: 0 });
-      this.syncInputs();
-      this.dispatchFreezeChange();
-    });
-
-    panel.append(
-      this.createInputLabel("Rows", this.#rowsInput),
-      this.createInputLabel("Columns", this.#columnsInput),
-      resetButton,
-    );
-    this.append(panel);
-  }
-
-  private createNumberInput(kind: FreezeInputKind, label: string): HTMLInputElement {
-    const input = document.createElement("input");
-    input.type = "number";
-    input.min = "0";
-    input.max = String(this.#limits[kind]);
-    input.value = String(this.#values[kind]);
-    input.inputMode = "numeric";
-    input.setAttribute("aria-label", label);
-    input.addEventListener("change", () => {
-      this.updateValueFromInput(kind, input);
-      this.dispatchFreezeChange();
-    });
-
-    return input;
-  }
-
-  private setValues(values: FreezeOptions): void {
-    this.#values = {
-      rows: clampInteger(values.rows, 0, this.#limits.rows),
-      columns: clampInteger(values.columns, 0, this.#limits.columns),
-    };
-  }
-
-  private updateValueFromInput(kind: FreezeInputKind, input: HTMLInputElement): void {
-    const clampedValue = clampInteger(Number(input.value), 0, this.#limits[kind]);
-    this.#values = {
-      ...this.#values,
-      [kind]: clampedValue,
-    };
-    input.value = String(clampedValue);
-  }
-
-  private updateInputLimits(): void {
-    if (this.#rowsInput) {
-      this.#rowsInput.max = String(this.#limits.rows);
-    }
-
-    if (this.#columnsInput) {
-      this.#columnsInput.max = String(this.#limits.columns);
-    }
-  }
-
-  private syncInputs(): void {
-    if (this.#rowsInput) {
-      this.#rowsInput.value = String(this.#values.rows);
-    }
-
-    if (this.#columnsInput) {
-      this.#columnsInput.value = String(this.#values.columns);
-    }
-  }
-
-  private createInputLabel(text: string, input: HTMLInputElement): HTMLLabelElement {
-    const label = document.createElement("label");
-    label.append(text, input);
-    return label;
-  }
-
-  private dispatchFreezeChange(): void {
-    this.dispatchEvent(
-      new CustomEvent<FreezeOptions>(FREEZE_CHANGE_EVENT, {
-        bubbles: true,
-        detail: this.values,
-      }),
-    );
-  }
+function createInputLabel(text: string, input: VNode): VNode {
+  return h("label", null, text, input);
 }
 
-export function defineTableControlsElement(): void {
-  if (!customElements.get(TABLE_CONTROLS_TAG)) {
-    customElements.define(TABLE_CONTROLS_TAG, TableControlsElement);
-  }
+function TableControls({ limits, onChange }: TableControlsProps): VNode {
+  const [isOpen, setIsOpen] = useState(false);
+  const [values, setValues] = useState<FreezeOptions>({ rows: 0, columns: 0 });
+
+  const updateValues = (nextValues: FreezeOptions): FreezeOptions => {
+    const clampedValues = {
+      rows: clampInteger(nextValues.rows, 0, limits.rows),
+      columns: clampInteger(nextValues.columns, 0, limits.columns),
+    };
+
+    setValues(clampedValues);
+    onChange(clampedValues);
+
+    return clampedValues;
+  };
+
+  const createNumberInput = (kind: FreezeInputKind, label: string): VNode =>
+    h("input", {
+      "aria-label": label,
+      inputMode: "numeric",
+      max: String(limits[kind]),
+      min: "0",
+      onChange: (event: Event) => {
+        const input = event.currentTarget as HTMLInputElement;
+        const clampedValues = updateValues({ ...values, [kind]: Number(input.value) });
+        input.value = String(clampedValues[kind]);
+      },
+      type: "number",
+      value: String(values[kind]),
+    });
+
+  return h(
+    Fragment,
+    null,
+    h(
+      "button",
+      {
+        "aria-expanded": String(isOpen),
+        className: TABLE_CONTROLS_TOGGLE_CLASS,
+        onClick: () => setIsOpen((currentValue) => !currentValue),
+        type: "button",
+      },
+      "Freeze",
+    ),
+    isOpen &&
+      h(
+        "div",
+        { className: TABLE_CONTROLS_PANEL_CLASS },
+        createInputLabel("Rows", createNumberInput("rows", "Frozen rows")),
+        createInputLabel("Columns", createNumberInput("columns", "Frozen columns")),
+        h(
+          "button",
+          {
+            onClick: () => updateValues({ rows: 0, columns: 0 }),
+            type: "button",
+          },
+          "Reset",
+        ),
+      ),
+  );
 }
 
-function createTableControls(table: HTMLTableElement): TableControlsElement {
-  defineTableControlsElement();
-
-  const controls = document.createElement(TABLE_CONTROLS_TAG) as TableControlsElement;
-  controls.setLimits({
-    rows: table.rows.length,
-    columns: table.rows[0]?.cells.length ?? 0,
-  });
-  controls.addEventListener(FREEZE_CHANGE_EVENT, (event) => {
-    applyTableFreeze(table, (event as FreezeChangeEvent).detail);
-  });
+function createTableControls(table: HTMLTableElement): HTMLElement {
+  const controls = document.createElement(TABLE_CONTROLS_TAG);
+  controls.classList.add(TABLE_CONTROLS_CLASS);
+  render(
+    h(TableControls, {
+      limits: {
+        rows: table.rows.length,
+        columns: table.rows[0]?.cells.length ?? 0,
+      },
+      onChange: (values) => applyTableFreeze(table, values),
+    }),
+    controls,
+  );
 
   return controls;
 }
