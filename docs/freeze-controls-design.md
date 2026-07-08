@@ -53,9 +53,11 @@ Combined row and column freezing:
 
 ## Implementation Shape
 
-Use a small Web Component for the controls UI rather than adding React.
+Render one lightweight controls host for each enhanced table without registering a Web Component.
+Chrome extension content scripts run in an isolated world, so the implementation should not rely on
+page-world globals such as `customElements`.
 
-Suggested component:
+Controls host:
 
 ```html
 <gte-table-controls></gte-table-controls>
@@ -66,29 +68,12 @@ Responsibilities:
 - Render the collapsed settings button.
 - Render the open panel with numeric inputs and reset control.
 - Own only UI-local state for open/closed state and current input values.
-- Dispatch a custom event when freeze values change.
+- Call the table freeze application logic directly when freeze values change.
 
-Suggested event:
-
-```ts
-type FreezeOptions = {
-  rows: number;
-  columns: number;
-};
-```
-
-```ts
-new CustomEvent<FreezeOptions>("gte:freeze-change", {
-  bubbles: true,
-  detail: { rows, columns },
-});
-```
-
-Keep table behavior outside the Web Component:
+Keep table behavior separate from table discovery:
 
 - Table discovery finds Markdown preview tables.
-- Table enhancement inserts one controls element per table.
-- Sticky style application listens for `gte:freeze-change`.
+- Table enhancement inserts one controls host per table.
 - Sticky style application resets previous freeze styles before applying new values.
 
 ## Sticky Calculation Notes
