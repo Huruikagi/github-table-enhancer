@@ -73,8 +73,13 @@
 }
 
 .markdown-body .github-table-enhancer-scroll > table {
+  --gte-sticky-border-color: var(--borderColor-default, var(--color-border-default, #d0d7de));
+
+  border-color: var(--gte-sticky-border-color);
   border-collapse: separate;
   border-spacing: 0;
+  border-style: solid;
+  border-width: 1px 0 0 1px;
   display: table;
   margin-block: 0;
   max-width: none;
@@ -85,13 +90,13 @@
 
 .github-table-enhancer-scroll > table th,
 .github-table-enhancer-scroll > table td {
+  border-width: 0 1px 1px 0;
   white-space: nowrap;
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-sticky="true"] {
-  --gte-sticky-border-bottom-width: 1px;
-  --gte-sticky-border-color: var(--borderColor-default, var(--color-border-default, #d0d7de));
-  --gte-sticky-border-right-width: 1px;
+  --gte-sticky-border-bottom-width: 0;
+  --gte-sticky-border-right-width: 0;
 
   background: var(--bgColor-default, var(--color-canvas-default, #ffffff));
   background-clip: border-box;
@@ -105,11 +110,11 @@
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-frozen-row-boundary="true"] {
-  --gte-sticky-border-bottom-width: 2px;
+  --gte-sticky-border-bottom-width: 1px;
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-frozen-column-boundary="true"] {
-  --gte-sticky-border-right-width: 2px;
+  --gte-sticky-border-right-width: 1px;
 }
 
 .github-table-enhancer-scroll > table td code,
