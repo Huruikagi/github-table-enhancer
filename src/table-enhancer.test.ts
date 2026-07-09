@@ -13,6 +13,7 @@ import {
 
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary";
+const FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenColumnBoundary";
 const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
 const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
@@ -173,6 +174,7 @@ describe("applyTableFreeze", () => {
 
     expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
     expect(table.rows[0]?.cells[0]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[0]?.cells[0]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
     expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_TOP_PROPERTY)).toBe("");
     expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_LEFT_PROPERTY)).toBe("");
     expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("");
@@ -197,6 +199,27 @@ describe("applyTableFreeze", () => {
     expect(table.rows[1]?.cells[0]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
     expect(table.rows[1]?.cells[1]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
     expect(table.rows[2]?.cells[0]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
+  });
+
+  it("marks only the final frozen column as the column boundary", () => {
+    document.body.innerHTML = `
+      <table>
+        <tbody>
+          <tr><td>one</td><td>two</td><td>three</td></tr>
+          <tr><td>four</td><td>five</td><td>six</td></tr>
+        </tbody>
+      </table>
+    `;
+    const table = getTable();
+
+    applyTableFreeze(table, { rows: 1, columns: 2 });
+
+    expect(table.rows[0]?.cells[0]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[0]?.cells[1]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.rows[0]?.cells[2]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[1]?.cells[0]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[1]?.cells[1]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.rows[1]?.cells[2]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
   });
 });
 

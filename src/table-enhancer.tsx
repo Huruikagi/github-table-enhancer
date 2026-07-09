@@ -10,6 +10,7 @@ export const TABLE_CONTROLS_TOGGLE_CLASS = "github-table-enhancer-controls-toggl
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 const STICKY_CELL_SELECTOR = "[data-github-table-enhancer-sticky='true']";
 const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary";
+const FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenColumnBoundary";
 const FROZEN_ROWS_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRows";
 const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
@@ -24,6 +25,7 @@ type FreezeInputKind = keyof FreezeOptions;
 type StickyCellLayout = {
   cell: HTMLTableCellElement;
   isFrozenRowBoundary: boolean;
+  isFrozenColumnBoundary: boolean;
   top: number | null;
   left: number | null;
   zIndex: number;
@@ -158,6 +160,7 @@ function resetTableFreeze(table: HTMLTableElement): void {
   for (const cell of stickyCells) {
     delete cell.dataset[STICKY_CELL_DATA_ATTRIBUTE];
     delete cell.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE];
+    delete cell.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE];
     cell.style.removeProperty(STICKY_TOP_PROPERTY);
     cell.style.removeProperty(STICKY_LEFT_PROPERTY);
     cell.style.removeProperty(STICKY_Z_INDEX_PROPERTY);
@@ -214,6 +217,7 @@ function getStickyCellLayouts(table: HTMLTableElement, options: FreezeOptions): 
 
     Array.from(row.cells).forEach((cell, columnIndex) => {
       const isFrozenColumn = columnIndex < options.columns;
+      const isFrozenColumnBoundary = columnIndex === options.columns - 1;
 
       if (!isFrozenRow && !isFrozenColumn) {
         return;
@@ -222,6 +226,7 @@ function getStickyCellLayouts(table: HTMLTableElement, options: FreezeOptions): 
       layouts.push({
         cell,
         isFrozenRowBoundary,
+        isFrozenColumnBoundary,
         top: isFrozenRow ? top : null,
         left: isFrozenColumn ? left : null,
         zIndex: getStickyZIndex(isFrozenRow, isFrozenColumn),
@@ -242,6 +247,7 @@ function getStickyCellLayouts(table: HTMLTableElement, options: FreezeOptions): 
 
 function applyStickyCellLayout({
   cell,
+  isFrozenColumnBoundary,
   isFrozenRowBoundary,
   top,
   left,
@@ -252,6 +258,10 @@ function applyStickyCellLayout({
 
   if (isFrozenRowBoundary) {
     cell.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE] = "true";
+  }
+
+  if (isFrozenColumnBoundary) {
+    cell.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE] = "true";
   }
 
   if (top !== null) {

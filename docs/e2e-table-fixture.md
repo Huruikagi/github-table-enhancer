@@ -13,6 +13,7 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - The last frozen row should show a clear bottom separator while the table scrolls vertically.
 - When frozen rows are enabled, long tables may scroll vertically inside the table wrapper.
 - Setting frozen columns should keep the first N left columns fully visible while scrolling horizontally, including after dragging the table scrollbar away from the left edge.
+- The last frozen column should show a clear right separator while the table scrolls horizontally.
 - Reset should return both freeze values to `0` and remove sticky row and column behavior.
 
 ## Wide Release Matrix
@@ -56,7 +57,7 @@ Set Frozen rows to `1` or `2`. The table wrapper should scroll vertically while 
 | 09 | Scroll | Drag the horizontal scrollbar away from the left edge. | Frozen columns remain visible. |
 | 10 | Reset | Click Reset. | The wrapper no longer needs to keep frozen rows visible. |
 | 11 | Reapply | Set Rows to `1` again. | Sticky row styles are applied again cleanly. |
-| 12 | Reapply | Set Columns to `2`. | The first two columns stay visible. |
+| 12 | Reapply | Set Columns to `2`. | The first two columns stay visible with a clear separator to the right of the second frozen column. |
 | 13 | Content | Confirm this row remains readable. | Body rows should not overlap the frozen row. |
 | 14 | Content | Confirm alternating nearby rows remain readable. | Sticky backgrounds should cover scrolled content. |
 | 15 | Content | Scroll slowly through this section. | There should be no jumpy table resizing. |
