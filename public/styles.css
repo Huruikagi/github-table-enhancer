@@ -98,14 +98,8 @@
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-sticky="true"] {
-  --gte-sticky-border-bottom-width: 0;
-  --gte-sticky-border-right-width: 0;
-
   background: var(--bgColor-default, var(--color-canvas-default, #ffffff));
   background-clip: border-box;
-  box-shadow:
-    inset calc(var(--gte-sticky-border-right-width) * -1) 0 var(--gte-sticky-border-color),
-    inset 0 calc(var(--gte-sticky-border-bottom-width) * -1) var(--gte-sticky-border-color);
   left: var(--gte-sticky-left, auto);
   position: sticky;
   top: var(--gte-sticky-top, auto);
@@ -113,11 +107,11 @@
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-frozen-row-boundary="true"] {
-  --gte-sticky-border-bottom-width: 2px;
+  border-bottom-width: 2px;
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-frozen-column-boundary="true"] {
-  --gte-sticky-border-right-width: 2px;
+  border-right-width: 2px;
 }
 
 .github-table-enhancer-scroll > table td code,
