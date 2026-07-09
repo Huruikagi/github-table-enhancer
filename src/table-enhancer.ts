@@ -1,4 +1,4 @@
-import type { VNode } from "preact";
+import type { ComponentChild, VNode } from "preact";
 import { Fragment, h, render } from "preact";
 import { useState } from "preact/hooks";
 
@@ -50,7 +50,7 @@ type TableControlsProps = {
   onChange: (values: FreezeOptions) => void;
 };
 
-function createInputLabel(text: string, input: VNode): VNode {
+function createInputLabel(text: string, input: ComponentChild): VNode {
   return h("label", null, text, input);
 }
 
@@ -70,7 +70,7 @@ function TableControls({ limits, onChange }: TableControlsProps): VNode {
     return clampedValues;
   };
 
-  const createNumberInput = (kind: FreezeInputKind, label: string): VNode =>
+  const createNumberInput = (kind: FreezeInputKind, label: string) =>
     h("input", {
       "aria-label": label,
       inputMode: "numeric",

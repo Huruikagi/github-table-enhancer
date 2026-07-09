@@ -1,3 +1,4 @@
+import { act } from "preact/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   applyTableFreeze,
@@ -34,7 +35,9 @@ function getTable(selector = "table"): HTMLTableElement {
 }
 
 function openFreezeControls(): void {
-  document.querySelector<HTMLButtonElement>(`${TABLE_CONTROLS_TAG} button`)?.click();
+  act(() => {
+    document.querySelector<HTMLButtonElement>(`${TABLE_CONTROLS_TAG} button`)?.click();
+  });
 }
 
 function getFreezeInput(label: string): HTMLInputElement {
@@ -49,8 +52,10 @@ function getFreezeInput(label: string): HTMLInputElement {
 
 function setFreezeInput(label: string, value: string): void {
   const input = getFreezeInput(label);
-  input.value = value;
-  input.dispatchEvent(new Event("change"));
+  act(() => {
+    input.value = value;
+    input.dispatchEvent(new Event("change"));
+  });
 }
 
 describe("isMarkdownBlobPage", () => {
