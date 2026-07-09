@@ -4,8 +4,8 @@ A small, unofficial Chrome extension that makes wide tables easier to read in Gi
 
 ## Scope
 
-- Runs on GitHub Markdown blob pages, such as `https://github.com/owner/repo/blob/main/docs/file.md`.
-- Does not run on issues, pull requests, discussions, or repository README landing pages.
+- Runs only on GitHub Markdown blob file preview pages, such as `https://github.com/owner/repo/blob/main/docs/file.md`.
+- Does not run on issues, pull requests, discussions, repository README landing pages, or rendered Markdown outside GitHub blob views.
 - Uses a content script only; no extra permissions are required.
 - This project is not affiliated with, sponsored by, or endorsed by GitHub.
 
