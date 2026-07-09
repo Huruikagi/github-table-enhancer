@@ -19,6 +19,8 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Clicking Wrap should switch resized cells from ellipsis clipping to wrapped content.
 - Clicking a hide button should remove that displayed row or column without changing the surrounding GitHub layout.
 - Show hidden should restore hidden rows and columns.
+- Clicking Filter should show a Filter rows input. Typing a runtime, package, status, or keyword should temporarily show only matching body rows while keeping header rows visible.
+- Clear filter should restore rows hidden only by the filter, while manually hidden rows remain hidden until Show hidden is clicked.
 - Setting frozen rows should keep the first N displayed rows visible while scrolling vertically.
 - Frozen rows should stay visually contained to the table area and should not cover GitHub file action controls while the page itself scrolls.
 - Frozen cells should keep normal-weight table grid lines visible while covering scrolled content behind them.
@@ -88,7 +90,9 @@ Set Frozen rows to `1` or `2`. The table wrapper should scroll vertically while 
 | 27 | Content | Use the table wrapper scrollbar. | The page layout should remain stable. |
 | 28 | Page scroll | Scroll the GitHub file view so the top of this table passes under the repository controls. | Frozen rows should not appear above the table wrapper or cover GitHub file actions. |
 | 29 | Restore | Open the Freeze control and click Show hidden. | Hidden rows and columns are restored. |
-| 29a | Reset table view | Reapply Rows `2`, Columns `2`, hide one row and one column, resize a column, click Wrap, then click Reset table view. | Freeze, hidden rows and columns, wrapping, and resized widths are all cleared for this table. |
+| 29a | Filter | Click Filter and type `rebuild`. | Only matching body rows remain visible, while the header row and any manually hidden rows keep their expected visibility. |
+| 29b | Clear filter | Click Clear filter. | Rows hidden only by filtering are restored. |
+| 29c | Reset table view | Reapply Rows `2`, Columns `2`, hide one row and one column, resize a column, click Wrap, type a filter, then click Reset table view. | Freeze, filter, hidden rows and columns, wrapping, and resized widths are all cleared for this table. |
 | 30 | Content | Scroll to this row with Rows set to `2`. | Two rows should still be visible. |
 | 31 | Content | Scroll to the final row below. | All body rows should be reachable. |
 | 32 | Reload | Reload the page and return to this table. | Rows `2` and Columns `1` are applied automatically from the heading default. |

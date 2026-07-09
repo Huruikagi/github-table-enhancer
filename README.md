@@ -19,6 +19,7 @@ A small, unofficial Chrome extension that makes wide tables easier to read and r
 - Adds a compact Freeze control for keeping the first N displayed rows or columns visible while scrolling.
 - Saves Freeze defaults per nearest preceding heading, then reapplies them when the same heading is viewed again.
 - Lets you temporarily hide displayed rows or columns and restore them with Show hidden.
+- Lets you temporarily filter table rows by case-insensitive text matching without saving the filter.
 - Lets you drag column edges to resize displayed columns during review.
 
 ## Local Install
@@ -62,6 +63,8 @@ Markdown preview tables are wrapped in a horizontal scroll container so long cel
 Each table gets compact controls above it. The Freeze panel can temporarily freeze the first N displayed rows and the first N left columns, reset those values, and save defaults for tables that have a preceding heading.
 
 Hide buttons appear while hovering table cells. Row hide buttons appear on the first cell in each row, and column hide buttons appear on header cells. Hidden rows and columns are temporary and can be restored with Show hidden.
+
+The Filter control can temporarily show only body rows whose row text contains a case-insensitive search term. Header rows stay visible, Clear filter restores filtered rows, and manually hidden rows remain hidden until Show hidden is used.
 
 Column resize handles appear on the table's header row. Dragging a handle changes that displayed column's width without changing the surrounding GitHub layout.
 

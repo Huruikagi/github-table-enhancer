@@ -20,6 +20,7 @@ const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary
 const FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenColumnBoundary";
 const HIDDEN_ROW_DATA_ATTRIBUTE = "githubTableEnhancerHiddenRow";
 const HIDDEN_COLUMN_DATA_ATTRIBUTE = "githubTableEnhancerHiddenColumn";
+const FILTERED_ROW_DATA_ATTRIBUTE = "githubTableEnhancerFilteredRow";
 const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
 const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
@@ -97,7 +98,7 @@ function openFreezeControls(): void {
   });
 }
 
-function getFreezeInput(label: string): HTMLInputElement {
+function getInput(label: string): HTMLInputElement {
   const input = document.querySelector<HTMLInputElement>(`input[aria-label='${label}']`);
 
   if (!(input instanceof HTMLInputElement)) {
@@ -107,11 +108,23 @@ function getFreezeInput(label: string): HTMLInputElement {
   return input;
 }
 
+function getFreezeInput(label: string): HTMLInputElement {
+  return getInput(label);
+}
+
 function setFreezeInput(label: string, value: string): void {
   const input = getFreezeInput(label);
   act(() => {
     input.value = value;
     input.dispatchEvent(new Event("change"));
+  });
+}
+
+function setFilterInput(value: string): void {
+  const input = getInput("Filter rows");
+  act(() => {
+    input.value = value;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
   });
 }
 
@@ -288,6 +301,160 @@ describe("wrapTable", () => {
 
     expect(wrapButton.ariaPressed).toBe("false");
     expect(table.dataset.githubTableEnhancerWrappedColumns).toBeUndefined();
+  });
+
+  it("shows a row filter input from the Filter control", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>Runtime</td><td>Status</td></tr>
+          <tr><td>Node.js</td><td>Ready</td></tr>
+        </tbody>
+      </table>
+    `);
+
+    wrapTable(getTable());
+
+    expect(document.querySelector("input[aria-label='Filter rows']")).toBeNull();
+
+    clickButton("Filter");
+
+    const input = getInput("Filter rows");
+    expect(input.placeholder).toBe("Filter rows...");
+  });
+
+  it("filters body rows by matching row text", () => {
+    renderMarkdownTables(`
+      <table>
+        <thead><tr><th>Runtime</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Node.js</td><td>Ready</td></tr>
+          <tr><td>Ruby</td><td>Blocked</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Filter");
+    setFilterInput("node");
+
+    expect(table.tHead?.rows[0]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.tBodies[0]?.rows[0]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.tBodies[0]?.rows[1]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
+  });
+
+  it("filters rows case-insensitively", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>Runtime</td></tr>
+          <tr><td>Chrome Stable</td></tr>
+          <tr><td>Firefox Nightly</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Filter");
+    setFilterInput("chrome stable");
+
+    expect(table.rows[1]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
+  });
+
+  it("clears row filtering for empty input and Clear filter", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>Runtime</td></tr>
+          <tr><td>Node.js</td></tr>
+          <tr><td>Ruby</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Filter");
+    setFilterInput("node");
+    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
+
+    setFilterInput("   ");
+    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+
+    setFilterInput("node");
+    clickButton("Clear filter");
+    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+  });
+
+  it("keeps the first row visible as a header when the table has no thead", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>Runtime</td><td>Status</td></tr>
+          <tr><td>Node.js</td><td>Ready</td></tr>
+          <tr><td>Ruby</td><td>Blocked</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Filter");
+    setFilterInput("node");
+
+    expect(table.rows[0]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[1]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
+  });
+
+  it("keeps manually hidden rows hidden even when they match the filter", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>Runtime</td></tr>
+          <tr><td>Node.js</td></tr>
+          <tr><td>Ruby</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Hide row 2");
+    clickButton("Filter");
+    setFilterInput("node");
+
+    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.rows[1]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
+  });
+
+  it("refreshes frozen cell layout after filter changes", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>Runtime</td><td>Status</td></tr>
+          <tr><td>Node.js</td><td>Ready</td></tr>
+          <tr><td>Ruby</td><td>Blocked</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    openFreezeControls();
+    setFreezeInput("Frozen rows", "1");
+    expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBe("true");
+
+    clickButton("Filter");
+    setFilterInput("node");
+
+    expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_TOP_PROPERTY)).toBe("0px");
+    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
   });
 
   it("applies a saved heading freeze rule as the initial value", async () => {

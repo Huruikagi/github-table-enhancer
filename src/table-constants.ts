@@ -13,6 +13,7 @@ export const FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenC
 export const FROZEN_ROWS_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRows";
 export const HIDDEN_ROW_DATA_ATTRIBUTE = "githubTableEnhancerHiddenRow";
 export const HIDDEN_COLUMN_DATA_ATTRIBUTE = "githubTableEnhancerHiddenColumn";
+export const FILTERED_ROW_DATA_ATTRIBUTE = "githubTableEnhancerFilteredRow";
 export const HIDE_ACTION_DATA_ATTRIBUTE = "githubTableEnhancerHideAction";
 export const HIDE_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerHideIndex";
 export const COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerColumnResizeIndex";
