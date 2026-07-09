@@ -11,7 +11,7 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Opening the Freeze control should show inputs for frozen rows and frozen columns.
 - Setting frozen rows should keep the first N displayed rows visible while scrolling vertically.
 - When frozen rows are enabled, long tables may scroll vertically inside the table wrapper.
-- Setting frozen columns should keep the first N left columns visible while scrolling horizontally.
+- Setting frozen columns should keep the first N left columns fully visible while scrolling horizontally, including after dragging the table scrollbar away from the left edge.
 - Reset should return both freeze values to `0` and remove sticky row and column behavior.
 
 ## Wide Release Matrix

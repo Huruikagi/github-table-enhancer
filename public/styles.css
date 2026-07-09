@@ -73,7 +73,10 @@
 }
 
 .markdown-body .github-table-enhancer-scroll > table {
+  display: table;
   margin-block: 0;
+  max-width: none;
+  overflow: visible;
   min-width: max-content;
   width: max-content;
 }
