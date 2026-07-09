@@ -81,6 +81,10 @@
   width: 56px;
 }
 
+.github-table-enhancer-controls-panel input[type="search"] {
+  width: 180px;
+}
+
 .markdown-body .github-table-enhancer-scroll > table {
   --gte-sticky-border-color: var(--borderColor-default, var(--color-border-default, #d0d7de));
 
@@ -125,6 +129,7 @@
 }
 
 .github-table-enhancer-scroll > table tr[data-github-table-enhancer-hidden-row="true"],
+.github-table-enhancer-scroll > table tr[data-github-table-enhancer-filtered-row="true"],
 .github-table-enhancer-scroll > table [data-github-table-enhancer-hidden-column="true"] {
   display: none;
 }

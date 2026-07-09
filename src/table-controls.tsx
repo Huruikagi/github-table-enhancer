@@ -96,10 +96,12 @@ function TableControls({
   const inputIdPrefix = useId();
   const hasUserEditedValues = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [values, setValues] = useState<FreezeOptions>({ rows: 0, columns: 0 });
   const [hiddenRows, setHiddenRows] = useState<readonly number[]>([]);
   const [hiddenColumns, setHiddenColumns] = useState<readonly number[]>([]);
   const [isWrapped, setIsWrapped] = useState(false);
+  const [filterQuery, setFilterQuery] = useState("");
   const [saveDefaultStatus, setSaveDefaultStatus] = useState<SaveDefaultStatus>("idle");
   const hiddenCount = hiddenRows.length + hiddenColumns.length;
 
@@ -133,8 +135,9 @@ function TableControls({
     setHiddenRows([]);
     setHiddenColumns([]);
     setIsWrapped(false);
+    setFilterQuery("");
     applyTableWrap(table, false);
-    applyTableVisibility(table, { rows: [], columns: [] });
+    applyTableVisibility(table, { rows: [], columns: [], filterQuery: "" });
     resetTableColumnResize(table);
     applyValues({ rows: 0, columns: 0 });
   };
@@ -227,9 +230,13 @@ function TableControls({
   }, [table]);
 
   useLayoutEffect(() => {
-    applyTableVisibility(table, { rows: hiddenRows, columns: hiddenColumns });
+    applyTableVisibility(table, {
+      rows: hiddenRows,
+      columns: hiddenColumns,
+      filterQuery,
+    });
     onChange(values);
-  }, [hiddenRows, hiddenColumns, onChange, table, values]);
+  }, [filterQuery, hiddenRows, hiddenColumns, onChange, table, values]);
 
   useLayoutEffect(
     () => installColumnResizeBehavior(table, () => onChange(values)),
@@ -271,6 +278,14 @@ function TableControls({
       >
         Wrap
       </button>
+      <button
+        aria-expanded={isFilterOpen}
+        className={TABLE_CONTROLS_TOGGLE_CLASS}
+        onClick={() => setIsFilterOpen((currentValue) => !currentValue)}
+        type="button"
+      >
+        Filter
+      </button>
       {hiddenCount > 0 && (
         <button className={TABLE_CONTROLS_TOGGLE_CLASS} onClick={showHidden} type="button">
           Show hidden
@@ -279,6 +294,27 @@ function TableControls({
       <button className={TABLE_CONTROLS_TOGGLE_CLASS} onClick={resetTableView} type="button">
         Reset table view
       </button>
+
+      {isFilterOpen && (
+        <div className={TABLE_CONTROLS_PANEL_CLASS}>
+          <label htmlFor={`${inputIdPrefix}-filter`}>
+            Filter rows
+            <input
+              aria-label="Filter rows"
+              id={`${inputIdPrefix}-filter`}
+              onInput={(event) => setFilterQuery(event.currentTarget.value)}
+              placeholder="Filter rows..."
+              type="search"
+              value={filterQuery}
+            />
+          </label>
+          {filterQuery.trim() && (
+            <button onClick={() => setFilterQuery("")} type="button">
+              Clear filter
+            </button>
+          )}
+        </div>
+      )}
       {isOpen && (
         <div className={TABLE_CONTROLS_PANEL_CLASS}>
           <label htmlFor={`${inputIdPrefix}-rows`}>
