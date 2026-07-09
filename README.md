@@ -1,12 +1,13 @@
-# GitHub Table Enhancer
+# Table Enhancer for GitHub
 
-A small Chrome extension that makes wide tables easier to read in GitHub Markdown file previews.
+A small, unofficial Chrome extension that makes wide tables easier to read in GitHub Markdown file previews.
 
 ## Scope
 
 - Runs on GitHub Markdown blob pages, such as `https://github.com/owner/repo/blob/main/docs/file.md`.
 - Does not run on issues, pull requests, discussions, or repository README landing pages.
 - Uses a content script only; no extra permissions are required.
+- This project is not affiliated with, sponsored by, or endorsed by GitHub.
 
 ## Local Install
 
