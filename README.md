@@ -1,5 +1,9 @@
 # Table Enhancer for GitHub
 
+<p align="center">
+  <img src="public/icons/icon128.png" width="128" height="128" alt="Table Enhancer for GitHub icon">
+</p>
+
 A small, unofficial Chrome extension that makes wide tables easier to read in GitHub Markdown file previews.
 
 ## Scope
