@@ -1,9 +1,16 @@
 import {
   COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE,
+  FILTERED_ROW_DATA_ATTRIBUTE,
+  HIDDEN_ROW_DATA_ATTRIBUTE,
   MIN_COLUMN_WIDTH,
   RESIZED_COLUMNS_DATA_ATTRIBUTE,
   TABLE_COLUMN_RESIZE_HANDLE_CLASS,
 } from "./table-constants";
+
+const FIT_COLUMN_MIN_WIDTH = 96;
+const FIT_COLUMN_MAX_WIDTH = 320;
+const FIT_COLUMN_TEXT_PADDING = 28;
+const FIT_COLUMN_AVERAGE_CHARACTER_WIDTH = 8;
 
 type ColumnResizeState = {
   columnIndex: number;
@@ -57,6 +64,30 @@ export function installTableColumnResizeControls(table: HTMLTableElement): void 
 
 function getTableColumnCount(table: HTMLTableElement): number {
   return Math.max(...Array.from(table.rows, (row) => row.cells.length), 0);
+}
+
+function clampColumnWidth(width: number): number {
+  return Math.min(Math.max(width, FIT_COLUMN_MIN_WIDTH), FIT_COLUMN_MAX_WIDTH);
+}
+
+function getCellPreferredWidth(cell: HTMLTableCellElement): number {
+  const measuredWidth = Math.max(cell.scrollWidth, cell.getBoundingClientRect().width);
+
+  if (measuredWidth > 0) {
+    return measuredWidth;
+  }
+
+  return (
+    (cell.textContent ?? "").trim().length * FIT_COLUMN_AVERAGE_CHARACTER_WIDTH +
+    FIT_COLUMN_TEXT_PADDING
+  );
+}
+
+function isVisibleRow(row: HTMLTableRowElement): boolean {
+  return (
+    row.dataset[HIDDEN_ROW_DATA_ATTRIBUTE] !== "true" &&
+    row.dataset[FILTERED_ROW_DATA_ATTRIBUTE] !== "true"
+  );
 }
 
 export function getAppliedColumnWidths(table: HTMLTableElement): number[] {
@@ -119,6 +150,38 @@ function applyColumnWidths(table: HTMLTableElement, widths: readonly number[]): 
   widths.forEach((width, index) => {
     columns[index]?.style.setProperty("width", `${width}px`);
   });
+}
+
+export function fitTableColumnWidths(
+  table: HTMLTableElement,
+  hiddenColumns: ReadonlySet<number> = new Set(),
+): void {
+  const columnCount = getTableColumnCount(table);
+
+  if (columnCount === 0) {
+    return;
+  }
+
+  const widths = Array.from({ length: columnCount }, (_, columnIndex) => {
+    const preferredWidth = Array.from(table.rows).reduce((currentWidth, row) => {
+      if (!isVisibleRow(row)) {
+        return currentWidth;
+      }
+
+      const cell = row.cells[columnIndex];
+
+      if (!cell) {
+        return currentWidth;
+      }
+
+      return Math.max(currentWidth, getCellPreferredWidth(cell));
+    }, MIN_COLUMN_WIDTH);
+
+    return clampColumnWidth(preferredWidth);
+  });
+
+  applyColumnWidths(table, widths);
+  updateResizedTableWidth(table, hiddenColumns);
 }
 
 export function updateResizedTableWidth(

@@ -16,6 +16,7 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Hovering a table header cell should show a column hide button.
 - Hovering the first cell in a row should show a row hide button.
 - Dragging a column edge should resize that displayed column without changing the surrounding GitHub layout.
+- Clicking Fit should set readable column widths and enable wrapped cell rendering in one step.
 - Clicking Wrap should switch resized cells from ellipsis clipping to wrapped content.
 - Clicking a hide button should remove that displayed row or column without changing the surrounding GitHub layout.
 - Show hidden should restore hidden rows and columns.
@@ -29,7 +30,7 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Setting frozen columns should keep the first N left columns fully visible while scrolling horizontally, including after dragging the table scrollbar away from the left edge.
 - The last frozen column should show a clear right separator while the table scrolls horizontally.
 - Reset should return both freeze values to `0` and remove sticky row and column behavior.
-- Reset table view should restore the current table to its initial display by clearing freeze, hidden rows and columns, wrap, and resized column widths.
+- Reset table view should restore the current table to its initial display by clearing freeze, hidden rows and columns, filters, wrap, fitted widths, and resized column widths.
 
 ## Wide Release Matrix
 
@@ -78,21 +79,22 @@ Set Frozen rows to `1` or `2`. The table wrapper should scroll vertically while 
 | 15 | Resize column | Drag the right edge of a header cell wider. | That column widens and the table remains horizontally scrollable. |
 | 16 | Resize column | Drag the same edge narrower. | That column narrows without collapsing below a usable width. |
 | 17 | Resize with freeze | Keep Columns at `2` and resize the first frozen column. | The second frozen column stays aligned with the resized first column. |
-| 18 | Wrap | Click Wrap after narrowing a column. | Long cell content wraps instead of showing an ellipsis. |
-| 19 | Wrap with freeze | Keep Rows at `2`, Columns at `2`, and toggle Wrap. | Frozen row and column positions are recalculated and remain aligned. |
-| 20 | Content | Scroll slowly through this section. | There should be no jumpy table resizing. |
-| 21 | Content | Scroll quickly through this section. | The frozen row should stay anchored to the wrapper. |
-| 22 | Content | Stop with this row near the top. | Text should not render on top of frozen cells. |
-| 23 | Content | Stop with this row near the bottom. | The table should still be horizontally scrollable. |
-| 24 | Content | Verify this row after changing Columns. | Column offsets should stay aligned. |
-| 25 | Content | Verify this row after changing Rows. | Row offsets should stay aligned. |
-| 26 | Content | Use the browser page scrollbar. | The table wrapper should keep its own scroll behavior. |
-| 27 | Content | Use the table wrapper scrollbar. | The page layout should remain stable. |
-| 28 | Page scroll | Scroll the GitHub file view so the top of this table passes under the repository controls. | Frozen rows should not appear above the table wrapper or cover GitHub file actions. |
-| 29 | Restore | Open the Freeze control and click Show hidden. | Hidden rows and columns are restored. |
-| 29a | Filter | Click Filter and type `rebuild`. | Only matching body rows remain visible, while the header row and any manually hidden rows keep their expected visibility. |
-| 29b | Clear filter | Click Clear filter. | Rows hidden only by filtering are restored. |
-| 29c | Reset table view | Reapply Rows `2`, Columns `2`, hide one row and one column, resize a column, click Wrap, type a filter, then click Reset table view. | Freeze, filter, hidden rows and columns, wrapping, and resized widths are all cleared for this table. |
+| 18 | Fit | Click Fit. | Columns use readable widths, long content wraps, and frozen row and column positions remain aligned. |
+| 19 | Wrap | Click Wrap after narrowing a column. | Long cell content wraps instead of showing an ellipsis. |
+| 20 | Wrap with freeze | Keep Rows at `2`, Columns at `2`, and toggle Wrap. | Frozen row and column positions are recalculated and remain aligned. |
+| 21 | Content | Scroll slowly through this section. | There should be no jumpy table resizing. |
+| 22 | Content | Scroll quickly through this section. | The frozen row should stay anchored to the wrapper. |
+| 23 | Content | Stop with this row near the top. | Text should not render on top of frozen cells. |
+| 24 | Content | Stop with this row near the bottom. | The table should still be horizontally scrollable. |
+| 25 | Content | Verify this row after changing Columns. | Column offsets should stay aligned. |
+| 26 | Content | Verify this row after changing Rows. | Row offsets should stay aligned. |
+| 27 | Content | Use the browser page scrollbar. | The table wrapper should keep its own scroll behavior. |
+| 28 | Content | Use the table wrapper scrollbar. | The page layout should remain stable. |
+| 29 | Page scroll | Scroll the GitHub file view so the top of this table passes under the repository controls. | Frozen rows should not appear above the table wrapper or cover GitHub file actions. |
+| 29a | Restore | Open the Freeze control and click Show hidden. | Hidden rows and columns are restored. |
+| 29b | Filter | Click Filter and type `rebuild`. | Only matching body rows remain visible, while the header row and any manually hidden rows keep their expected visibility. |
+| 29c | Clear filter | Click Clear filter. | Rows hidden only by filtering are restored. |
+| 29d | Reset table view | Reapply Rows `2`, Columns `2`, hide one row and one column, click Fit, resize a column, type a filter, then click Reset table view. | Freeze, filter, hidden rows and columns, wrapping, fitted widths, and resized widths are all cleared for this table. |
 | 30 | Content | Scroll to this row with Rows set to `2`. | Two rows should still be visible. |
 | 31 | Content | Scroll to the final row below. | All body rows should be reachable. |
 | 32 | Reload | Reload the page and return to this table. | Rows `2` and Columns `1` are applied automatically from the heading default. |

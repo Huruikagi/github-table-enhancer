@@ -20,7 +20,9 @@ A small, unofficial Chrome extension that makes wide tables easier to read and r
 - Saves Freeze defaults per nearest preceding heading, then reapplies them when the same heading is viewed again.
 - Lets you temporarily hide displayed rows or columns and restore them with Show hidden.
 - Lets you temporarily filter table rows by case-insensitive text matching without saving the filter.
+- Lets you auto-fit displayed columns into readable widths with Fit.
 - Lets you drag column edges to resize displayed columns during review.
+- Lets you reset a table view back to its initial display state.
 
 ## Local Install
 
@@ -67,6 +69,7 @@ Hide buttons appear while hovering table cells. Row hide buttons appear on the f
 The Filter control can temporarily show only body rows whose row text contains a case-insensitive search term. Header rows stay visible, Clear filter restores filtered rows, and manually hidden rows remain hidden until Show hidden is used.
 
 Column resize handles appear on the table's header row. Dragging a handle changes that displayed column's width without changing the surrounding GitHub layout.
+The Fit control applies readable column widths and wrapping in one step, while Reset table view clears temporary table changes and returns the table to its initial display.
 
 For manual Chrome checks, use [docs/e2e-table-fixture.md](docs/e2e-table-fixture.md) from a GitHub Markdown blob page.
 

@@ -13,6 +13,7 @@ import {
 } from "./table-constants";
 import type { FreezeOptions } from "./table-freeze";
 import {
+  fitTableColumnWidths,
   installColumnResizeBehavior,
   installTableColumnResizeControls,
   resetTableColumnResize,
@@ -127,6 +128,13 @@ function TableControls({
   const showHidden = (): void => {
     setHiddenRows([]);
     setHiddenColumns([]);
+  };
+
+  const fitTableView = (): void => {
+    setIsWrapped(true);
+    applyTableWrap(table, true);
+    fitTableColumnWidths(table, new Set(hiddenColumns));
+    onChange(values);
   };
 
   const resetTableView = (): void => {
@@ -269,6 +277,9 @@ function TableControls({
         type="button"
       >
         Freeze
+      </button>
+      <button className={TABLE_CONTROLS_TOGGLE_CLASS} onClick={fitTableView} type="button">
+        Fit
       </button>
       <button
         aria-pressed={isWrapped}

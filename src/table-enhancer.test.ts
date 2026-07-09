@@ -303,6 +303,38 @@ describe("wrapTable", () => {
     expect(table.dataset.githubTableEnhancerWrappedColumns).toBeUndefined();
   });
 
+  it("fits columns to readable widths and enables wrapping", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>Short</td><td>Very long release note text that should be capped by fit instead of forcing a giant table column</td></tr>
+          <tr><td>OK</td><td>Another long value for the same column</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Fit");
+
+    const columns = table.querySelectorAll("col");
+    expect(table.dataset.githubTableEnhancerResizedColumns).toBe("true");
+    expect(table.dataset.githubTableEnhancerWrappedColumns).toBe("true");
+    expect(getButton("Wrap").ariaPressed).toBe("true");
+    expect(columns[0]?.style.width).toBe("96px");
+    expect(columns[1]?.style.width).toBe("320px");
+    expect(table.style.width).toBe("416px");
+
+    clickButton("Reset table view");
+
+    expect(getButton("Wrap").ariaPressed).toBe("false");
+    expect(table.dataset.githubTableEnhancerResizedColumns).toBeUndefined();
+    expect(table.dataset.githubTableEnhancerWrappedColumns).toBeUndefined();
+    expect(table.style.width).toBe("");
+    expect(columns[0]?.style.width).toBe("");
+    expect(columns[1]?.style.width).toBe("");
+  });
+
   it("shows a row filter input from the Filter control", () => {
     renderMarkdownTables(`
       <table>
