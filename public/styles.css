@@ -110,11 +110,11 @@
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-frozen-row-boundary="true"] {
-  --gte-sticky-border-bottom-width: 1px;
+  --gte-sticky-border-bottom-width: 2px;
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-frozen-column-boundary="true"] {
-  --gte-sticky-border-right-width: 1px;
+  --gte-sticky-border-right-width: 2px;
 }
 
 .github-table-enhancer-scroll > table td code,
