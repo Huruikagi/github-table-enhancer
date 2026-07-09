@@ -263,6 +263,33 @@ describe("wrapTable", () => {
     expect(table.rows[1]?.cells[1]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
   });
 
+  it("toggles wrapped column rendering from the table controls", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>one very long value</td><td>two</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+
+    const wrapButton = getButton("Wrap");
+    expect(wrapButton.ariaPressed).toBe("false");
+    expect(table.dataset.githubTableEnhancerWrappedColumns).toBeUndefined();
+
+    clickButton("Wrap");
+
+    expect(wrapButton.ariaPressed).toBe("true");
+    expect(table.dataset.githubTableEnhancerWrappedColumns).toBe("true");
+
+    clickButton("Wrap");
+
+    expect(wrapButton.ariaPressed).toBe("false");
+    expect(table.dataset.githubTableEnhancerWrappedColumns).toBeUndefined();
+  });
+
   it("applies a saved heading freeze rule as the initial value", async () => {
     installFakeChromeStorage({
       [FREEZE_RULE_SETTINGS_STORAGE_KEY]: {

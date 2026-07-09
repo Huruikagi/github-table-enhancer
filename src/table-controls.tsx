@@ -9,6 +9,7 @@ import {
   TABLE_CONTROLS_TAG,
   TABLE_CONTROLS_TOGGLE_CLASS,
   TABLE_HIDE_BUTTON_CLASS,
+  WRAPPED_COLUMNS_DATA_ATTRIBUTE,
 } from "./table-constants";
 import type { FreezeOptions } from "./table-freeze";
 import {
@@ -75,6 +76,14 @@ function installTableHideControls(table: HTMLTableElement): void {
   }
 }
 
+function applyTableWrap(table: HTMLTableElement, isWrapped: boolean): void {
+  if (isWrapped) {
+    table.dataset[WRAPPED_COLUMNS_DATA_ATTRIBUTE] = "true";
+  } else {
+    delete table.dataset[WRAPPED_COLUMNS_DATA_ATTRIBUTE];
+  }
+}
+
 function TableControls({
   defaultValuesPromise,
   headingText,
@@ -89,6 +98,7 @@ function TableControls({
   const [values, setValues] = useState<FreezeOptions>({ rows: 0, columns: 0 });
   const [hiddenRows, setHiddenRows] = useState<readonly number[]>([]);
   const [hiddenColumns, setHiddenColumns] = useState<readonly number[]>([]);
+  const [isWrapped, setIsWrapped] = useState(false);
   const [saveDefaultStatus, setSaveDefaultStatus] = useState<SaveDefaultStatus>("idle");
   const hiddenCount = hiddenRows.length + hiddenColumns.length;
 
@@ -114,6 +124,14 @@ function TableControls({
   const showHidden = (): void => {
     setHiddenRows([]);
     setHiddenColumns([]);
+  };
+
+  const toggleWrap = (): void => {
+    const nextIsWrapped = !isWrapped;
+
+    setIsWrapped(nextIsWrapped);
+    applyTableWrap(table, nextIsWrapped);
+    onChange(values);
   };
 
   const saveDefault = async (): Promise<void> => {
@@ -231,6 +249,14 @@ function TableControls({
         type="button"
       >
         Freeze
+      </button>
+      <button
+        aria-pressed={isWrapped}
+        className={TABLE_CONTROLS_TOGGLE_CLASS}
+        onClick={toggleWrap}
+        type="button"
+      >
+        Wrap
       </button>
       {hiddenCount > 0 && (
         <button className={TABLE_CONTROLS_TOGGLE_CLASS} onClick={showHidden} type="button">

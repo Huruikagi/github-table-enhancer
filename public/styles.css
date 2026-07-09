@@ -117,6 +117,13 @@
   text-overflow: ellipsis;
 }
 
+.github-table-enhancer-scroll > table[data-github-table-enhancer-wrapped-columns="true"] th,
+.github-table-enhancer-scroll > table[data-github-table-enhancer-wrapped-columns="true"] td {
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
 .github-table-enhancer-scroll > table tr[data-github-table-enhancer-hidden-row="true"],
 .github-table-enhancer-scroll > table [data-github-table-enhancer-hidden-column="true"] {
   display: none;
@@ -212,4 +219,10 @@
 .github-table-enhancer-scroll > table td code,
 .github-table-enhancer-scroll > table th code {
   white-space: nowrap;
+}
+
+.github-table-enhancer-scroll > table[data-github-table-enhancer-wrapped-columns="true"] td code,
+.github-table-enhancer-scroll > table[data-github-table-enhancer-wrapped-columns="true"] th code {
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
