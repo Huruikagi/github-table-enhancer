@@ -7,6 +7,7 @@ import {
   findMarkdownContainer,
   isMarkdownBlobPage,
   startTableEnhancer,
+  TABLE_COLUMN_RESIZE_HANDLE_CLASS,
   TABLE_CONTROLS_TAG,
   TABLE_HIDE_BUTTON_CLASS,
   TABLE_WRAPPER_CLASS,
@@ -189,6 +190,43 @@ describe("wrapTable", () => {
     expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBe("true");
     expect(table.rows[0]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBe("true");
     expect(table.rows[1]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBe("true");
+  });
+
+  it("adds drag handles that resize columns and refresh frozen column offsets", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>one</td><td>two</td></tr>
+          <tr><td>three</td><td>four</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    openFreezeControls();
+    setFreezeInput("Frozen columns", "2");
+
+    const handle = table.querySelector<HTMLElement>(`.${TABLE_COLUMN_RESIZE_HANDLE_CLASS}`);
+    expect(table.querySelectorAll(`.${TABLE_COLUMN_RESIZE_HANDLE_CLASS}`)).toHaveLength(2);
+
+    act(() => {
+      handle?.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, clientX: 100 }));
+      window.dispatchEvent(new MouseEvent("pointermove", { clientX: 132 }));
+      window.dispatchEvent(new MouseEvent("pointerup", { clientX: 132 }));
+    });
+
+    const columns = table.querySelectorAll("col");
+    expect(table.dataset.githubTableEnhancerResizedColumns).toBe("true");
+    expect(table.style.width).toBe("128px");
+    expect(columns[0]?.style.width).toBe("80px");
+    expect(columns[1]?.style.width).toBe("48px");
+    expect(table.rows[0]?.cells[1]?.style.getPropertyValue(STICKY_LEFT_PROPERTY)).toBe("80px");
+
+    clickButton("Hide column 2");
+
+    expect(columns[1]?.style.display).toBe("none");
+    expect(table.style.width).toBe("80px");
   });
 
   it("restores hidden rows and columns from the control panel", () => {

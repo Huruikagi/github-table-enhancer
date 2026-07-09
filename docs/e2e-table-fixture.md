@@ -11,6 +11,7 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Opening the Freeze control should show inputs for frozen rows and frozen columns.
 - Hovering a table header cell should show a column hide button.
 - Hovering the first cell in a row should show a row hide button.
+- Dragging a column edge should resize that displayed column without changing the surrounding GitHub layout.
 - Clicking a hide button should remove that displayed row or column without changing the surrounding GitHub layout.
 - Show hidden should restore hidden rows and columns.
 - Setting frozen rows should keep the first N displayed rows visible while scrolling vertically.
@@ -66,19 +67,22 @@ Set Frozen rows to `1` or `2`. The table wrapper should scroll vertically while 
 | 12 | Reapply | Set Columns to `2`. | The first two columns stay visible with a clear separator to the right of the second frozen column. |
 | 13 | Hide row | Hover the first cell of this row and click the hide button. | The row disappears and nearby rows remain readable. |
 | 14 | Hide column | Hover a header cell and click the hide button. | The column disappears while the table remains horizontally scrollable. |
-| 15 | Content | Scroll slowly through this section. | There should be no jumpy table resizing. |
-| 16 | Content | Scroll quickly through this section. | The frozen row should stay anchored to the wrapper. |
-| 17 | Content | Stop with this row near the top. | Text should not render on top of frozen cells. |
-| 18 | Content | Stop with this row near the bottom. | The table should still be horizontally scrollable. |
-| 19 | Content | Verify this row after changing Columns. | Column offsets should stay aligned. |
-| 20 | Content | Verify this row after changing Rows. | Row offsets should stay aligned. |
-| 21 | Content | Use the browser page scrollbar. | The table wrapper should keep its own scroll behavior. |
-| 22 | Content | Use the table wrapper scrollbar. | The page layout should remain stable. |
-| 23 | Page scroll | Scroll the GitHub file view so the top of this table passes under the repository controls. | Frozen rows should not appear above the table wrapper or cover GitHub file actions. |
-| 24 | Restore | Open the Freeze control and click Show hidden. | Hidden rows and columns are restored. |
-| 25 | Content | Scroll to this row with Rows set to `2`. | Two rows should still be visible. |
-| 26 | Content | Scroll to the final row below. | All body rows should be reachable. |
-| 27 | Final | Confirm the bottom of the table is visible. | No content should be clipped below the wrapper. |
+| 15 | Resize column | Drag the right edge of a header cell wider. | That column widens and the table remains horizontally scrollable. |
+| 16 | Resize column | Drag the same edge narrower. | That column narrows without collapsing below a usable width. |
+| 17 | Resize with freeze | Keep Columns at `2` and resize the first frozen column. | The second frozen column stays aligned with the resized first column. |
+| 18 | Content | Scroll slowly through this section. | There should be no jumpy table resizing. |
+| 19 | Content | Scroll quickly through this section. | The frozen row should stay anchored to the wrapper. |
+| 20 | Content | Stop with this row near the top. | Text should not render on top of frozen cells. |
+| 21 | Content | Stop with this row near the bottom. | The table should still be horizontally scrollable. |
+| 22 | Content | Verify this row after changing Columns. | Column offsets should stay aligned. |
+| 23 | Content | Verify this row after changing Rows. | Row offsets should stay aligned. |
+| 24 | Content | Use the browser page scrollbar. | The table wrapper should keep its own scroll behavior. |
+| 25 | Content | Use the table wrapper scrollbar. | The page layout should remain stable. |
+| 26 | Page scroll | Scroll the GitHub file view so the top of this table passes under the repository controls. | Frozen rows should not appear above the table wrapper or cover GitHub file actions. |
+| 27 | Restore | Open the Freeze control and click Show hidden. | Hidden rows and columns are restored. |
+| 28 | Content | Scroll to this row with Rows set to `2`. | Two rows should still be visible. |
+| 29 | Content | Scroll to the final row below. | All body rows should be reachable. |
+| 30 | Final | Confirm the bottom of the table is visible. | No content should be clipped below the wrapper. |
 
 ## Normal-Width Control Table
 

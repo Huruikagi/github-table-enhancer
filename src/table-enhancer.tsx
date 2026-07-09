@@ -8,6 +8,7 @@ export const TABLE_CONTROLS_CLASS = "github-table-enhancer-controls";
 export const TABLE_CONTROLS_PANEL_CLASS = "github-table-enhancer-controls-panel";
 export const TABLE_CONTROLS_TOGGLE_CLASS = "github-table-enhancer-controls-toggle";
 export const TABLE_HIDE_BUTTON_CLASS = "github-table-enhancer-hide-button";
+export const TABLE_COLUMN_RESIZE_HANDLE_CLASS = "github-table-enhancer-column-resize-handle";
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 const STICKY_CELL_SELECTOR = "[data-github-table-enhancer-sticky='true']";
 const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary";
@@ -17,9 +18,12 @@ const HIDDEN_ROW_DATA_ATTRIBUTE = "githubTableEnhancerHiddenRow";
 const HIDDEN_COLUMN_DATA_ATTRIBUTE = "githubTableEnhancerHiddenColumn";
 const HIDE_ACTION_DATA_ATTRIBUTE = "githubTableEnhancerHideAction";
 const HIDE_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerHideIndex";
+const COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerColumnResizeIndex";
+const RESIZED_COLUMNS_DATA_ATTRIBUTE = "githubTableEnhancerResizedColumns";
 const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
 const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
+const MIN_COLUMN_WIDTH = 48;
 
 type FreezeOptions = {
   rows: number;
@@ -39,6 +43,13 @@ type StickyCellLayout = {
   top: number | null;
   left: number | null;
   zIndex: number;
+};
+type ColumnResizeState = {
+  columnIndex: number;
+  pointerId: number;
+  startX: number;
+  startWidth: number;
+  widths: number[];
 };
 
 export function isMarkdownBlobPage(pathname = window.location.pathname): boolean {
@@ -110,6 +121,223 @@ function installTableHideControls(table: HTMLTableElement): void {
   }
 }
 
+function resetTableColumnResizeControls(table: HTMLTableElement): void {
+  for (const handle of table.querySelectorAll(`.${TABLE_COLUMN_RESIZE_HANDLE_CLASS}`)) {
+    handle.remove();
+  }
+}
+
+function createColumnResizeHandle(index: number): HTMLSpanElement {
+  const handle = document.createElement("span");
+
+  handle.ariaHidden = "true";
+  handle.className = TABLE_COLUMN_RESIZE_HANDLE_CLASS;
+  handle.dataset[COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE] = String(index);
+  handle.title = `Resize column ${index + 1}`;
+
+  return handle;
+}
+
+function installTableColumnResizeControls(table: HTMLTableElement): void {
+  resetTableColumnResizeControls(table);
+
+  const columnControlRow = table.tHead?.rows[0] ?? table.rows[0];
+
+  if (!columnControlRow) {
+    return;
+  }
+
+  for (const [columnIndex, cell] of Array.from(columnControlRow.cells).entries()) {
+    cell.appendChild(createColumnResizeHandle(columnIndex));
+  }
+}
+
+function getTableColumnCount(table: HTMLTableElement): number {
+  return Math.max(...Array.from(table.rows, (row) => row.cells.length), 0);
+}
+
+function getAppliedColumnWidths(table: HTMLTableElement): number[] {
+  const columns = Array.from(
+    table.querySelectorAll<HTMLTableColElement>(":scope > colgroup > col"),
+  );
+
+  return columns.map((column) => {
+    const width = Number.parseFloat(column.style.width);
+    return Number.isFinite(width) ? width : MIN_COLUMN_WIDTH;
+  });
+}
+
+function getColumnWidths(table: HTMLTableElement): number[] {
+  const columnCount = getTableColumnCount(table);
+  const appliedWidths = getAppliedColumnWidths(table);
+
+  if (appliedWidths.length === columnCount) {
+    return appliedWidths;
+  }
+
+  const firstCompleteRow =
+    Array.from(table.rows).find((row) => row.cells.length === columnCount) ?? table.rows[0];
+
+  return Array.from({ length: columnCount }, (_, columnIndex) => {
+    const cell = firstCompleteRow?.cells[columnIndex];
+    return Math.max(cell?.getBoundingClientRect().width ?? MIN_COLUMN_WIDTH, MIN_COLUMN_WIDTH);
+  });
+}
+
+function ensureColumnGroup(table: HTMLTableElement, columnCount: number): HTMLTableColElement[] {
+  const existingColumnGroup = table.querySelector<HTMLTableColElement>(":scope > colgroup");
+  const columnGroup = existingColumnGroup ?? document.createElement("colgroup");
+
+  if (!existingColumnGroup) {
+    table.insertBefore(columnGroup, table.firstChild);
+  }
+
+  while (columnGroup.children.length < columnCount) {
+    columnGroup.appendChild(document.createElement("col"));
+  }
+
+  while (columnGroup.children.length > columnCount) {
+    columnGroup.lastElementChild?.remove();
+  }
+
+  return Array.from(columnGroup.children).filter(
+    (column): column is HTMLTableColElement => column instanceof HTMLTableColElement,
+  );
+}
+
+function applyColumnWidths(table: HTMLTableElement, widths: readonly number[]): void {
+  const columns = ensureColumnGroup(table, widths.length);
+  const tableWidth = `${widths.reduce((sum, width) => sum + width, 0)}px`;
+
+  table.dataset[RESIZED_COLUMNS_DATA_ATTRIBUTE] = "true";
+  table.style.width = tableWidth;
+  table.style.minWidth = tableWidth;
+
+  widths.forEach((width, index) => {
+    columns[index]?.style.setProperty("width", `${width}px`);
+  });
+}
+
+function updateResizedTableWidth(
+  table: HTMLTableElement,
+  hiddenColumns: ReadonlySet<number>,
+): void {
+  if (table.dataset[RESIZED_COLUMNS_DATA_ATTRIBUTE] !== "true") {
+    return;
+  }
+
+  let visibleWidth = 0;
+
+  getAppliedColumnWidths(table).forEach((width, columnIndex) => {
+    if (!hiddenColumns.has(columnIndex)) {
+      visibleWidth += width;
+    }
+  });
+
+  const tableWidth = `${visibleWidth}px`;
+  table.style.width = tableWidth;
+  table.style.minWidth = tableWidth;
+}
+
+function getColumnResizeHandle(target: EventTarget | null): HTMLElement | null {
+  if (!(target instanceof Element)) {
+    return null;
+  }
+
+  return target.closest<HTMLElement>(`.${TABLE_COLUMN_RESIZE_HANDLE_CLASS}`);
+}
+
+function installColumnResizeBehavior(table: HTMLTableElement, onResize: () => void): () => void {
+  let resizeState: ColumnResizeState | null = null;
+
+  const finishResize = (): void => {
+    if (!resizeState) {
+      return;
+    }
+
+    resizeState = null;
+    document.documentElement.style.cursor = "";
+    document.documentElement.style.userSelect = "";
+    onResize();
+  };
+
+  const handlePointerMove = (event: PointerEvent): void => {
+    if (!resizeState || event.pointerId !== resizeState.pointerId) {
+      return;
+    }
+
+    const widths = [...resizeState.widths];
+    widths[resizeState.columnIndex] = Math.max(
+      resizeState.startWidth + event.clientX - resizeState.startX,
+      MIN_COLUMN_WIDTH,
+    );
+
+    applyColumnWidths(table, widths);
+    onResize();
+  };
+
+  const handlePointerUp = (event: PointerEvent): void => {
+    if (resizeState && event.pointerId === resizeState.pointerId) {
+      finishResize();
+    }
+  };
+
+  const handlePointerDown = (event: PointerEvent): void => {
+    const handle = getColumnResizeHandle(event.target);
+
+    if (!handle || !table.contains(handle)) {
+      return;
+    }
+
+    const columnIndex = Number(handle.dataset[COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE]);
+    const widths = getColumnWidths(table);
+
+    if (!Number.isInteger(columnIndex) || columnIndex < 0 || columnIndex >= widths.length) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    resizeState = {
+      columnIndex,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startWidth: widths[columnIndex] ?? MIN_COLUMN_WIDTH,
+      widths,
+    };
+    document.documentElement.style.cursor = "col-resize";
+    document.documentElement.style.userSelect = "none";
+  };
+
+  table.addEventListener("pointerdown", handlePointerDown);
+  window.addEventListener("pointermove", handlePointerMove);
+  window.addEventListener("pointerup", handlePointerUp);
+  window.addEventListener("pointercancel", handlePointerUp);
+
+  return () => {
+    table.removeEventListener("pointerdown", handlePointerDown);
+    window.removeEventListener("pointermove", handlePointerMove);
+    window.removeEventListener("pointerup", handlePointerUp);
+    window.removeEventListener("pointercancel", handlePointerUp);
+    finishResize();
+  };
+}
+
+function getStickyColumnWidth(
+  table: HTMLTableElement,
+  cell: HTMLTableCellElement,
+  columnIndex: number,
+): number {
+  const appliedWidth = getAppliedColumnWidths(table)[columnIndex];
+
+  if (appliedWidth !== undefined) {
+    return appliedWidth;
+  }
+
+  return cell.getBoundingClientRect().width;
+}
+
 type TableControlsProps = {
   table: HTMLTableElement;
   limits: FreezeOptions;
@@ -143,6 +371,7 @@ function TableControls({ limits, onChange, table }: TableControlsProps): VNode {
 
   useLayoutEffect(() => {
     installTableHideControls(table);
+    installTableColumnResizeControls(table);
 
     const handleClick = (event: MouseEvent): void => {
       if (!(event.target instanceof Element)) {
@@ -179,6 +408,7 @@ function TableControls({ limits, onChange, table }: TableControlsProps): VNode {
     return () => {
       table.removeEventListener("click", handleClick);
       resetTableHideControls(table);
+      resetTableColumnResizeControls(table);
     };
   }, [table]);
 
@@ -186,6 +416,11 @@ function TableControls({ limits, onChange, table }: TableControlsProps): VNode {
     applyTableVisibility(table, { rows: hiddenRows, columns: hiddenColumns });
     onChange(values);
   }, [hiddenRows, hiddenColumns, onChange, table, values]);
+
+  useLayoutEffect(
+    () => installColumnResizeBehavior(table, () => onChange(values)),
+    [onChange, table, values],
+  );
 
   const createNumberInput = (kind: FreezeInputKind, label: string) => (
     <input
@@ -292,6 +527,7 @@ function resetTableFreeze(table: HTMLTableElement): void {
 export function applyTableVisibility(table: HTMLTableElement, visibility: TableVisibility): void {
   const hiddenRows = new Set(visibility.rows);
   const hiddenColumns = new Set(visibility.columns);
+  const columns = table.querySelectorAll<HTMLTableColElement>(":scope > colgroup > col");
 
   for (const [rowIndex, row] of Array.from(table.rows).entries()) {
     if (hiddenRows.has(rowIndex)) {
@@ -308,6 +544,11 @@ export function applyTableVisibility(table: HTMLTableElement, visibility: TableV
       }
     }
   }
+
+  columns.forEach((column, columnIndex) => {
+    column.style.display = hiddenColumns.has(columnIndex) ? "none" : "";
+  });
+  updateResizedTableWidth(table, hiddenColumns);
 }
 
 function setFrozenRowsState(table: HTMLTableElement, frozenRows: number): void {
@@ -376,7 +617,7 @@ function getStickyCellLayouts(table: HTMLTableElement, options: FreezeOptions): 
       });
 
       if (isFrozenColumn) {
-        left += cell.getBoundingClientRect().width;
+        left += getStickyColumnWidth(table, cell, columnIndex);
       }
     });
 
