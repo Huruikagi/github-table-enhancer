@@ -1,17 +1,22 @@
 import type { VNode } from "preact";
 import { render } from "preact";
-import { useId, useState } from "preact/hooks";
+import { useId, useLayoutEffect, useState } from "preact/hooks";
 
 export const TABLE_WRAPPER_CLASS = "github-table-enhancer-scroll";
 export const TABLE_CONTROLS_TAG = "gte-table-controls";
 export const TABLE_CONTROLS_CLASS = "github-table-enhancer-controls";
 export const TABLE_CONTROLS_PANEL_CLASS = "github-table-enhancer-controls-panel";
 export const TABLE_CONTROLS_TOGGLE_CLASS = "github-table-enhancer-controls-toggle";
+export const TABLE_HIDE_BUTTON_CLASS = "github-table-enhancer-hide-button";
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 const STICKY_CELL_SELECTOR = "[data-github-table-enhancer-sticky='true']";
 const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary";
 const FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenColumnBoundary";
 const FROZEN_ROWS_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRows";
+const HIDDEN_ROW_DATA_ATTRIBUTE = "githubTableEnhancerHiddenRow";
+const HIDDEN_COLUMN_DATA_ATTRIBUTE = "githubTableEnhancerHiddenColumn";
+const HIDE_ACTION_DATA_ATTRIBUTE = "githubTableEnhancerHideAction";
+const HIDE_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerHideIndex";
 const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
 const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
@@ -22,6 +27,11 @@ type FreezeOptions = {
 };
 
 type FreezeInputKind = keyof FreezeOptions;
+type HideAction = "hide-row" | "hide-column";
+type TableVisibility = {
+  rows: readonly number[];
+  columns: readonly number[];
+};
 type StickyCellLayout = {
   cell: HTMLTableCellElement;
   isFrozenRowBoundary: boolean;
@@ -49,15 +59,70 @@ function clampInteger(value: number, min: number, max: number): number {
   return Math.min(Math.max(Math.trunc(value), min), max);
 }
 
+function addUniqueSortedIndex(values: readonly number[], index: number): readonly number[] {
+  if (values.includes(index)) {
+    return values;
+  }
+
+  return [...values, index].sort((left, right) => left - right);
+}
+
+function createHideButton(action: HideAction, index: number): HTMLButtonElement {
+  const button = document.createElement("button");
+  const labelKind = action === "hide-row" ? "row" : "column";
+
+  button.ariaLabel = `Hide ${labelKind} ${index + 1}`;
+  button.className = `${TABLE_HIDE_BUTTON_CLASS} ${TABLE_HIDE_BUTTON_CLASS}--${labelKind}`;
+  button.dataset[HIDE_ACTION_DATA_ATTRIBUTE] = action;
+  button.dataset[HIDE_INDEX_DATA_ATTRIBUTE] = String(index);
+  button.title = button.ariaLabel;
+  button.type = "button";
+  button.textContent = "×";
+
+  return button;
+}
+
+function resetTableHideControls(table: HTMLTableElement): void {
+  for (const button of table.querySelectorAll(`.${TABLE_HIDE_BUTTON_CLASS}`)) {
+    button.remove();
+  }
+}
+
+function installTableHideControls(table: HTMLTableElement): void {
+  resetTableHideControls(table);
+
+  for (const [rowIndex, row] of Array.from(table.rows).entries()) {
+    const firstCell = row.cells[0];
+
+    if (firstCell) {
+      firstCell.appendChild(createHideButton("hide-row", rowIndex));
+    }
+  }
+
+  const columnControlRow = table.tHead?.rows[0] ?? table.rows[0];
+
+  if (!columnControlRow) {
+    return;
+  }
+
+  for (const [columnIndex, cell] of Array.from(columnControlRow.cells).entries()) {
+    cell.appendChild(createHideButton("hide-column", columnIndex));
+  }
+}
+
 type TableControlsProps = {
+  table: HTMLTableElement;
   limits: FreezeOptions;
   onChange: (values: FreezeOptions) => void;
 };
 
-function TableControls({ limits, onChange }: TableControlsProps): VNode {
+function TableControls({ limits, onChange, table }: TableControlsProps): VNode {
   const inputIdPrefix = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [values, setValues] = useState<FreezeOptions>({ rows: 0, columns: 0 });
+  const [hiddenRows, setHiddenRows] = useState<readonly number[]>([]);
+  const [hiddenColumns, setHiddenColumns] = useState<readonly number[]>([]);
+  const hiddenCount = hiddenRows.length + hiddenColumns.length;
 
   const updateValues = (nextValues: FreezeOptions): FreezeOptions => {
     const clampedValues = {
@@ -70,6 +135,57 @@ function TableControls({ limits, onChange }: TableControlsProps): VNode {
 
     return clampedValues;
   };
+
+  const showHidden = (): void => {
+    setHiddenRows([]);
+    setHiddenColumns([]);
+  };
+
+  useLayoutEffect(() => {
+    installTableHideControls(table);
+
+    const handleClick = (event: MouseEvent): void => {
+      if (!(event.target instanceof Element)) {
+        return;
+      }
+
+      const button = event.target.closest<HTMLButtonElement>(`.${TABLE_HIDE_BUTTON_CLASS}`);
+
+      if (!button || !table.contains(button)) {
+        return;
+      }
+
+      const action = button.dataset[HIDE_ACTION_DATA_ATTRIBUTE];
+      const index = Number(button.dataset[HIDE_INDEX_DATA_ATTRIBUTE]);
+
+      if (!Number.isInteger(index)) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (action === "hide-row") {
+        setHiddenRows((currentValue) => addUniqueSortedIndex(currentValue, index));
+      }
+
+      if (action === "hide-column") {
+        setHiddenColumns((currentValue) => addUniqueSortedIndex(currentValue, index));
+      }
+    };
+
+    table.addEventListener("click", handleClick);
+
+    return () => {
+      table.removeEventListener("click", handleClick);
+      resetTableHideControls(table);
+    };
+  }, [table]);
+
+  useLayoutEffect(() => {
+    applyTableVisibility(table, { rows: hiddenRows, columns: hiddenColumns });
+    onChange(values);
+  }, [hiddenRows, hiddenColumns, onChange, table, values]);
 
   const createNumberInput = (kind: FreezeInputKind, label: string) => (
     <input
@@ -98,6 +214,11 @@ function TableControls({ limits, onChange }: TableControlsProps): VNode {
       >
         Freeze
       </button>
+      {hiddenCount > 0 && (
+        <button className={TABLE_CONTROLS_TOGGLE_CLASS} onClick={showHidden} type="button">
+          Show hidden
+        </button>
+      )}
       {isOpen && (
         <div className={TABLE_CONTROLS_PANEL_CLASS}>
           <label htmlFor={`${inputIdPrefix}-rows`}>
@@ -122,6 +243,7 @@ function createTableControls(table: HTMLTableElement): HTMLElement {
   controls.classList.add(TABLE_CONTROLS_CLASS);
   render(
     <TableControls
+      table={table}
       limits={{
         rows: table.rows.length,
         columns: table.rows[0]?.cells.length ?? 0,
@@ -164,6 +286,27 @@ function resetTableFreeze(table: HTMLTableElement): void {
     cell.style.removeProperty(STICKY_TOP_PROPERTY);
     cell.style.removeProperty(STICKY_LEFT_PROPERTY);
     cell.style.removeProperty(STICKY_Z_INDEX_PROPERTY);
+  }
+}
+
+export function applyTableVisibility(table: HTMLTableElement, visibility: TableVisibility): void {
+  const hiddenRows = new Set(visibility.rows);
+  const hiddenColumns = new Set(visibility.columns);
+
+  for (const [rowIndex, row] of Array.from(table.rows).entries()) {
+    if (hiddenRows.has(rowIndex)) {
+      row.dataset[HIDDEN_ROW_DATA_ATTRIBUTE] = "true";
+    } else {
+      delete row.dataset[HIDDEN_ROW_DATA_ATTRIBUTE];
+    }
+
+    for (const [columnIndex, cell] of Array.from(row.cells).entries()) {
+      if (hiddenColumns.has(columnIndex)) {
+        cell.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE] = "true";
+      } else {
+        delete cell.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE];
+      }
+    }
   }
 }
 

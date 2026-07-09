@@ -16,6 +16,7 @@
 
 .github-table-enhancer-controls {
   display: flex;
+  gap: 6px;
   justify-content: flex-end;
   margin-block-end: 6px;
   min-width: max-content;
@@ -40,6 +41,11 @@
 .github-table-enhancer-controls-toggle:hover,
 .github-table-enhancer-controls-panel button:hover {
   background: var(--button-default-bgColor-hover, var(--color-btn-hover-bg, #f3f4f6));
+}
+
+.github-table-enhancer-controls-panel button:disabled {
+  color: var(--fgColor-disabled, var(--color-primer-fg-disabled, #8c959f));
+  cursor: default;
 }
 
 .github-table-enhancer-controls-panel {
@@ -94,7 +100,56 @@
 .github-table-enhancer-scroll > table th,
 .github-table-enhancer-scroll > table td {
   border-width: 0 1px 1px 0;
+  position: relative;
   white-space: nowrap;
+}
+
+.github-table-enhancer-scroll > table tr[data-github-table-enhancer-hidden-row="true"],
+.github-table-enhancer-scroll > table [data-github-table-enhancer-hidden-column="true"] {
+  display: none;
+}
+
+.github-table-enhancer-hide-button {
+  align-items: center;
+  appearance: none;
+  background: var(--button-default-bgColor-rest, var(--color-btn-bg, #f6f8fa));
+  border: 1px solid var(--button-default-borderColor-rest, var(--color-btn-border, #d0d7de));
+  border-radius: 50%;
+  color: var(--fgColor-muted, var(--color-fg-muted, #57606a));
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 18px;
+  justify-content: center;
+  line-height: 16px;
+  opacity: 0;
+  padding: 0;
+  position: absolute;
+  transition: opacity 80ms ease-in-out;
+  width: 18px;
+  z-index: 6;
+}
+
+.github-table-enhancer-hide-button--row {
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.github-table-enhancer-hide-button--column {
+  right: 2px;
+  top: 2px;
+}
+
+.github-table-enhancer-scroll > table th:hover > .github-table-enhancer-hide-button,
+.github-table-enhancer-scroll > table td:hover > .github-table-enhancer-hide-button,
+.github-table-enhancer-hide-button:focus-visible {
+  opacity: 1;
+}
+
+.github-table-enhancer-hide-button:hover {
+  background: var(--button-default-bgColor-hover, var(--color-btn-hover-bg, #f3f4f6));
+  color: var(--fgColor-default, var(--color-fg-default, #24292f));
 }
 
 .github-table-enhancer-scroll > table [data-github-table-enhancer-sticky="true"] {

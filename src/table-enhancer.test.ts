@@ -2,11 +2,13 @@ import { act } from "preact/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   applyTableFreeze,
+  applyTableVisibility,
   enhanceTables,
   findMarkdownContainer,
   isMarkdownBlobPage,
   startTableEnhancer,
   TABLE_CONTROLS_TAG,
+  TABLE_HIDE_BUTTON_CLASS,
   TABLE_WRAPPER_CLASS,
   wrapTable,
 } from "./table-enhancer";
@@ -14,6 +16,8 @@ import {
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary";
 const FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenColumnBoundary";
+const HIDDEN_ROW_DATA_ATTRIBUTE = "githubTableEnhancerHiddenRow";
+const HIDDEN_COLUMN_DATA_ATTRIBUTE = "githubTableEnhancerHiddenColumn";
 const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
 const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
@@ -57,6 +61,22 @@ function setFreezeInput(label: string, value: string): void {
   act(() => {
     input.value = value;
     input.dispatchEvent(new Event("change"));
+  });
+}
+
+function clickButton(label: string): void {
+  const button =
+    document.querySelector<HTMLButtonElement>(`button[aria-label='${label}']`) ??
+    Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find(
+      (candidate) => candidate.textContent === label,
+    );
+
+  if (!(button instanceof HTMLButtonElement)) {
+    throw new Error(`Expected ${label} button to be rendered`);
+  }
+
+  act(() => {
+    button.click();
   });
 }
 
@@ -149,6 +169,49 @@ describe("wrapTable", () => {
     expect(table.rows[1]?.cells[0]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("2");
     expect(table.rows[1]?.cells[1]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
   });
+
+  it("adds hover controls that hide rows and columns", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>one</td><td>two</td></tr>
+          <tr><td>three</td><td>four</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Hide row 2");
+    clickButton("Hide column 2");
+
+    expect(table.querySelectorAll(`.${TABLE_HIDE_BUTTON_CLASS}`)).toHaveLength(4);
+    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.rows[0]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.rows[1]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBe("true");
+  });
+
+  it("restores hidden rows and columns from the control panel", () => {
+    renderMarkdownTables(`
+      <table>
+        <tbody>
+          <tr><td>one</td><td>two</td></tr>
+          <tr><td>three</td><td>four</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Hide row 2");
+    clickButton("Hide column 2");
+    openFreezeControls();
+    clickButton("Show hidden");
+
+    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[0]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[1]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBeUndefined();
+  });
 });
 
 describe("applyTableFreeze", () => {
@@ -220,6 +283,32 @@ describe("applyTableFreeze", () => {
     expect(table.rows[1]?.cells[0]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
     expect(table.rows[1]?.cells[1]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
     expect(table.rows[1]?.cells[2]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
+  });
+});
+
+describe("applyTableVisibility", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("marks hidden rows and columns and clears previous visibility state", () => {
+    document.body.innerHTML = `
+      <table>
+        <tbody>
+          <tr><td>one</td><td>two</td></tr>
+          <tr><td>three</td><td>four</td></tr>
+        </tbody>
+      </table>
+    `;
+    const table = getTable();
+
+    applyTableVisibility(table, { rows: [1], columns: [1] });
+    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.rows[0]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBe("true");
+
+    applyTableVisibility(table, { rows: [], columns: [] });
+    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+    expect(table.rows[0]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBeUndefined();
   });
 });
 
