@@ -6,23 +6,23 @@ import {
   TABLE_CONTROLS_TAG,
   TABLE_CONTROLS_TOGGLE_CLASS,
   WRAPPED_COLUMNS_DATA_ATTRIBUTE,
-} from "./table-constants";
-import { FilterPanel, FreezePanel, type SaveDefaultStatus } from "./table-control-panels";
-import type { FreezeOptions } from "./table-freeze";
+} from "./constants";
+import { FilterPanel, FreezePanel, type SaveDefaultStatus } from "./control-panels";
+import type { FreezeOptions } from "./freeze";
 import {
   getHideControlClick,
   installTableHideControls,
   resetTableHideControls,
-} from "./table-hide-controls";
+} from "./hide-controls";
 import {
   fitTableColumnWidths,
   installColumnResizeBehavior,
   installTableColumnResizeControls,
   resetTableColumnResize,
   resetTableColumnResizeControls,
-} from "./table-resize";
-import { addUniqueSortedIndex, clampInteger } from "./table-utils";
-import { applyTableVisibility } from "./table-visibility";
+} from "./resize";
+import { addUniqueSortedIndex, clampInteger } from "./utils";
+import { applyTableVisibility } from "./visibility";
 
 type TableControlsProps = {
   defaultValuesPromise?: Promise<FreezeOptions | null> | null;

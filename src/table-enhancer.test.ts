@@ -13,7 +13,7 @@ import {
   TABLE_HIDE_BUTTON_CLASS,
   TABLE_WRAPPER_CLASS,
   wrapTable,
-} from "./table-enhancer";
+} from "./table/enhancer";
 
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary";

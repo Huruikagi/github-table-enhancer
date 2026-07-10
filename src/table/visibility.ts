@@ -2,8 +2,8 @@ import {
   FILTERED_ROW_DATA_ATTRIBUTE,
   HIDDEN_COLUMN_DATA_ATTRIBUTE,
   HIDDEN_ROW_DATA_ATTRIBUTE,
-} from "./table-constants";
-import { updateResizedTableWidth } from "./table-resize";
+} from "./constants";
+import { updateResizedTableWidth } from "./resize";
 
 export type TableVisibility = {
   rows: readonly number[];

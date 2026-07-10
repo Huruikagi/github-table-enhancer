@@ -1,6 +1,6 @@
 import type { Ref, VNode } from "preact";
-import { TABLE_CONTROLS_PANEL_CLASS } from "./table-constants";
-import type { FreezeOptions } from "./table-freeze";
+import { TABLE_CONTROLS_PANEL_CLASS } from "./constants";
+import type { FreezeOptions } from "./freeze";
 
 type FreezeInputKind = keyof FreezeOptions;
 

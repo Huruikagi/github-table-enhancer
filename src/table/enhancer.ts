@@ -1,18 +1,8 @@
+import { TABLE_WRAPPER_CLASS } from "./constants";
+import { createTableControls } from "./controls";
+import { applyTableFreeze } from "./freeze";
 import { readHeadingFreezeRule, saveHeadingFreezeRule } from "./freeze-rule-storage";
-import {
-  TABLE_COLUMN_RESIZE_HANDLE_CLASS,
-  TABLE_CONTROLS_CLASS,
-  TABLE_CONTROLS_PANEL_CLASS,
-  TABLE_CONTROLS_TAG,
-  TABLE_CONTROLS_TOGGLE_CLASS,
-  TABLE_HIDE_BUTTON_CLASS,
-  TABLE_WRAPPER_CLASS,
-} from "./table-constants";
-import { createTableControls } from "./table-controls";
-import { applyTableFreeze } from "./table-freeze";
 
-export { applyTableFreeze } from "./table-freeze";
-export { applyTableVisibility } from "./table-visibility";
 export {
   TABLE_COLUMN_RESIZE_HANDLE_CLASS,
   TABLE_CONTROLS_CLASS,
@@ -21,7 +11,9 @@ export {
   TABLE_CONTROLS_TOGGLE_CLASS,
   TABLE_HIDE_BUTTON_CLASS,
   TABLE_WRAPPER_CLASS,
-};
+} from "./constants";
+export { applyTableFreeze } from "./freeze";
+export { applyTableVisibility } from "./visibility";
 
 export function isMarkdownBlobPage(pathname = window.location.pathname): boolean {
   return /^\/[^/]+\/[^/]+\/blob\/.+\.md$/i.test(pathname);

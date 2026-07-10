@@ -8,9 +8,9 @@ import {
   STICKY_TOP_PROPERTY,
   STICKY_Z_INDEX_PROPERTY,
   TABLE_WRAPPER_CLASS,
-} from "./table-constants";
-import { getStickyColumnWidth } from "./table-resize";
-import { clampInteger } from "./table-utils";
+} from "./constants";
+import { getStickyColumnWidth } from "./resize";
+import { clampInteger } from "./utils";
 
 export type FreezeOptions = {
   rows: number;
