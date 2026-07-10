@@ -1,0 +1,5 @@
+verifyDepsBeforeRun: warn
+enableGlobalVirtualStore: false
+
+allowBuilds:
+  esbuild: true
