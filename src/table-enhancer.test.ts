@@ -163,9 +163,11 @@ function clickButton(label: string): void {
 }
 
 function getButton(label: string): HTMLButtonElement {
-  const button = Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find(
-    (candidate) => candidate.textContent === label,
-  );
+  const button =
+    document.querySelector<HTMLButtonElement>(`button[aria-label='${label}']`) ??
+    Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find(
+      (candidate) => candidate.textContent === label,
+    );
 
   if (!(button instanceof HTMLButtonElement)) {
     throw new Error(`Expected ${label} button to be rendered`);
@@ -308,6 +310,31 @@ describe("wrapTable", () => {
     expect(table.rows[0]?.cells[1]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("3");
     expect(table.rows[1]?.cells[0]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("2");
     expect(table.rows[1]?.cells[1]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
+  });
+
+  it("orders icon controls by task and gives them accessible names and tooltips", () => {
+    renderMarkdownTables("<table><tbody><tr><td>one</td></tr></tbody></table>");
+
+    wrapTable(getTable());
+
+    const buttons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>(`${TABLE_CONTROLS_TAG} > button`),
+    );
+    expect(buttons.map((button) => button.ariaLabel || button.textContent)).toEqual([
+      "Freeze",
+      "Filter",
+      "Copy as",
+      "Fit",
+      "Wrap",
+      "Reset table view",
+      "Expand",
+    ]);
+
+    for (const label of ["Filter", "Fit", "Wrap", "Reset table view", "Expand"]) {
+      const button = getButton(label);
+      expect(button.title).not.toBe("");
+      expect(button.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+    }
   });
 
   it("focuses the rows input when the freeze panel opens", () => {

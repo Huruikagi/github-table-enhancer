@@ -22,6 +22,8 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Show hidden should restore hidden rows and columns.
 - Clicking Filter should show and focus a Filter rows input. Typing a runtime, package, status, or keyword should temporarily show only matching body rows while keeping header rows visible.
 - Pressing Escape inside Freeze, Filter, or Copy as should close the popup and return focus to its button.
+- Icon-only controls should expose a descriptive tooltip on hover and an accessible name to assistive technology.
+- Controls should be ordered by task: Freeze, Filter, Copy as, Fit, Wrap, restore/reset actions, then Expand.
 - Clear filter should restore rows hidden only by the filter, while manually hidden rows remain hidden until Show hidden is clicked.
 - Clicking Copy as should offer Markdown, CSV, and TSV copy actions.
 - Copy as should copy only the current visible table view, excluding hidden rows, filtered rows, and hidden columns.

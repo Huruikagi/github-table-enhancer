@@ -85,6 +85,24 @@ body.github-table-enhancer-focus-mode-open {
   padding: 3px 8px;
 }
 
+.github-table-enhancer-controls-toggle:has(svg) {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  padding-inline: 7px;
+}
+
+.github-table-enhancer-controls-toggle svg {
+  fill: none;
+  height: 16px;
+  pointer-events: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  width: 16px;
+}
+
 .github-table-enhancer-controls-toggle:hover,
 .github-table-enhancer-controls-panel button:hover {
   background: var(--button-default-bgColor-hover, var(--color-btn-hover-bg, #f3f4f6));
