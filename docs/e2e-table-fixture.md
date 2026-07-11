@@ -2,6 +2,8 @@
 
 Use this page to manually verify the extension on an actual GitHub Markdown blob page in Chrome.
 
+The separate `pnpm demo:video` command records the store presentation scenario. It uses a deterministic local fixture and writes the generated WebM to `docs/store-assets/videos/github-table-enhancer-demo.webm`.
+
 ## Expected Behavior
 
 - Each table should remain readable inside the GitHub Markdown preview.
