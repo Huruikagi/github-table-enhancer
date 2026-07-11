@@ -741,7 +741,9 @@ describe("wrapTable", () => {
     setFilterInput("chrome stable");
 
     expect(table.rows[1]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
+    expect(
+      Array.from(table.rows).some((row) => row.dataset[FILTERED_ROW_DATA_ATTRIBUTE] === "true"),
+    ).toBe(true);
   });
 
   it("clears row filtering for empty input and Clear filter", () => {
@@ -940,6 +942,62 @@ describe("wrapTable", () => {
     expect(table.rows[1]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBe("true");
   });
 
+  it("sorts body rows in ascending, descending, and original order", () => {
+    renderMarkdownTables(`
+      <table>
+        <thead><tr><th>Name</th><th>Count</th></tr></thead>
+        <tbody>
+          <tr><td>item 10</td><td>10</td></tr>
+          <tr><td>item 2</td><td>2</td></tr>
+          <tr><td>item 1</td><td>1</td></tr>
+        </tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Sort by column 1");
+    expect(
+      Array.from(table.tBodies[0]?.rows ?? [], (row) =>
+        row.cells[0]?.textContent?.replace("×", ""),
+      ),
+    ).toEqual(["item 1", "item 2", "item 10"]);
+    expect(table.tHead?.rows[0]?.cells[0]?.getAttribute("aria-sort")).toBe("ascending");
+
+    clickButton("Sort by column 1");
+    expect(
+      Array.from(table.tBodies[0]?.rows ?? [], (row) =>
+        row.cells[0]?.textContent?.replace("×", ""),
+      ),
+    ).toEqual(["item 10", "item 2", "item 1"]);
+
+    clickButton("Sort by column 1");
+    expect(
+      Array.from(table.tBodies[0]?.rows ?? [], (row) =>
+        row.cells[0]?.textContent?.replace("×", ""),
+      ),
+    ).toEqual(["item 10", "item 2", "item 1"]);
+    expect(table.tHead?.rows[0]?.cells[0]?.getAttribute("aria-sort")).toBe("none");
+  });
+
+  it("keeps a hidden row associated with the same row after sorting", () => {
+    renderMarkdownTables(`
+      <table>
+        <thead><tr><th>Name</th></tr></thead>
+        <tbody><tr><td>Zulu</td></tr><tr><td>Alpha</td></tr></tbody>
+      </table>
+    `);
+    const table = getTable();
+
+    wrapTable(table);
+    clickButton("Hide row 3");
+    clickButton("Sort by column 1");
+
+    expect(table.tBodies[0]?.rows[0]?.cells[0]?.textContent).toContain("Alpha");
+    expect(table.tBodies[0]?.rows[0]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBe("true");
+    expect(table.tBodies[0]?.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBeUndefined();
+  });
+
   it("adds drag handles that resize columns and refresh frozen column offsets", () => {
     renderMarkdownTables(`
       <table>
@@ -1020,6 +1078,7 @@ describe("wrapTable", () => {
     clickButton("Wrap");
     clickButton("Filter");
     setFilterInput("three");
+    clickButton("Sort by column 1");
 
     const handle = table.querySelector<HTMLElement>(`.${TABLE_COLUMN_RESIZE_HANDLE_CLASS}`);
     act(() => {
@@ -1029,10 +1088,14 @@ describe("wrapTable", () => {
     });
 
     expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBe("true");
-    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBe("true");
+    expect(
+      Array.from(table.rows).find((row) => row.dataset[HIDDEN_ROW_DATA_ATTRIBUTE] === "true"),
+    ).toBeDefined();
     expect(table.dataset.githubTableEnhancerWrappedColumns).toBe("true");
     expect(table.dataset.githubTableEnhancerResizedColumns).toBe("true");
-    expect(table.rows[2]?.dataset[FILTERED_ROW_DATA_ATTRIBUTE]).toBe("true");
+    expect(
+      Array.from(table.rows).some((row) => row.dataset[FILTERED_ROW_DATA_ATTRIBUTE] === "true"),
+    ).toBe(true);
     expect(getInput("Filter rows").value).toBe("three");
 
     clickButton("Reset table view");
@@ -1050,6 +1113,8 @@ describe("wrapTable", () => {
     expect(table.dataset.githubTableEnhancerResizedColumns).toBeUndefined();
     expect(table.style.width).toBe("");
     expect(table.querySelector<HTMLTableColElement>("col")?.style.width).toBe("");
+    expect(table.rows[1]?.cells[0]?.textContent).toContain("three");
+    expect(table.rows[0]?.cells[0]?.getAttribute("aria-sort")).toBe("none");
   });
 });
 

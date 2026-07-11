@@ -4,6 +4,7 @@ import {
   HIDDEN_ROW_DATA_ATTRIBUTE,
 } from "./constants";
 import { updateResizedTableWidth } from "./resize";
+import { getOriginalRowIndex, initializeOriginalRowIndexes } from "./sort";
 
 export type TableVisibility = {
   rows: readonly number[];
@@ -33,13 +34,14 @@ function isFilteredRow(
 }
 
 export function applyTableVisibility(table: HTMLTableElement, visibility: TableVisibility): void {
+  initializeOriginalRowIndexes(table);
   const hiddenRows = new Set(visibility.rows);
   const hiddenColumns = new Set(visibility.columns);
   const normalizedFilterQuery = visibility.filterQuery?.trim().toLowerCase() ?? "";
   const columns = table.querySelectorAll<HTMLTableColElement>(":scope > colgroup > col");
 
   for (const [rowIndex, row] of Array.from(table.rows).entries()) {
-    if (hiddenRows.has(rowIndex)) {
+    if (hiddenRows.has(getOriginalRowIndex(row))) {
       row.dataset[HIDDEN_ROW_DATA_ATTRIBUTE] = "true";
     } else {
       delete row.dataset[HIDDEN_ROW_DATA_ATTRIBUTE];

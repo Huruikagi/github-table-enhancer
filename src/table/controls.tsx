@@ -25,6 +25,14 @@ import {
   resetTableColumnResize,
   resetTableColumnResizeControls,
 } from "./resize";
+import {
+  applyTableSort,
+  getNextTableSort,
+  getSortColumnClick,
+  installTableSortControls,
+  resetTableSortControls,
+  type TableSort,
+} from "./sort";
 import { addUniqueSortedIndex, clampInteger } from "./utils";
 import { applyTableVisibility } from "./visibility";
 
@@ -90,6 +98,7 @@ function TableControls({
   const [hiddenColumns, setHiddenColumns] = useState<readonly number[]>([]);
   const [isWrapped, setIsWrapped] = useState(false);
   const [filterQuery, setFilterQuery] = useState("");
+  const [sort, setSort] = useState<TableSort>(null);
   const [copyStatus, setCopyStatus] = useState<CopyFormat | "failed" | "idle">("idle");
   const [saveDefaultStatus, setSaveDefaultStatus] = useState<SaveDefaultStatus>("idle");
   const hiddenCount = hiddenRows.length + hiddenColumns.length;
@@ -133,8 +142,10 @@ function TableControls({
     setHiddenColumns([]);
     setIsWrapped(false);
     setFilterQuery("");
+    setSort(null);
     applyTableWrap(table, false);
     applyTableVisibility(table, { rows: [], columns: [], filterQuery: "" });
+    applyTableSort(table, null);
     resetTableColumnResize(table);
     applyValues({ rows: 0, columns: 0 });
   };
@@ -198,9 +209,18 @@ function TableControls({
   useLayoutEffect(() => {
     installTableHideControls(table);
     installTableColumnResizeControls(table);
+    installTableSortControls(table);
 
     const handleClick = (event: MouseEvent): void => {
       const hideControlClick = getHideControlClick(table, event.target);
+      const sortColumn = getSortColumnClick(table, event.target);
+
+      if (sortColumn !== null) {
+        event.preventDefault();
+        event.stopPropagation();
+        setSort((currentSort) => getNextTableSort(currentSort, sortColumn));
+        return;
+      }
 
       if (!hideControlClick) {
         return;
@@ -226,6 +246,7 @@ function TableControls({
       table.removeEventListener("click", handleClick);
       resetTableHideControls(table);
       resetTableColumnResizeControls(table);
+      resetTableSortControls(table);
     };
   }, [table]);
 
@@ -237,6 +258,11 @@ function TableControls({
     });
     onChange(values);
   }, [filterQuery, hiddenRows, hiddenColumns, onChange, table, values]);
+
+  useLayoutEffect(() => {
+    applyTableSort(table, sort);
+    onChange(values);
+  }, [onChange, sort, table, values]);
 
   useLayoutEffect(
     () => installColumnResizeBehavior(table, () => onChange(values)),

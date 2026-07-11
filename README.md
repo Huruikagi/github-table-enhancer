@@ -24,6 +24,7 @@ A small, unofficial Chrome extension that makes wide tables easier to read and r
 - Saves Freeze defaults per nearest preceding heading, then reapplies them when the same heading is viewed again.
 - Lets you temporarily hide displayed rows or columns and restore them with Show hidden.
 - Lets you temporarily filter table rows by case-insensitive text matching without saving the filter.
+- Sorts body rows from column headers in ascending, descending, or original Markdown order.
 - Lets you copy the currently visible table view as Markdown, CSV, or TSV.
 - Lets you auto-fit displayed columns into readable widths with Fit.
 - Expands an individual table into a full-window Focus mode without losing its current view state.
@@ -80,10 +81,12 @@ Hide buttons appear while hovering table cells. Row hide buttons appear on the f
 
 The Filter control can temporarily show only body rows whose row text contains a case-insensitive search term. Header rows stay visible, Clear filter restores filtered rows, and manually hidden rows remain hidden until Show hidden is used.
 
+Each column header includes a sort button. Repeated clicks cycle through ascending, descending, and original Markdown order. Numeric and date-like values are compared by value, while other text uses case-insensitive natural ordering. Sorting is temporary and keeps filters and manually hidden rows attached to the same rows.
+
 The Copy as control writes the current visible table view to the clipboard as Markdown, CSV, or TSV. Rows hidden manually, rows hidden by the current filter, and hidden columns are omitted from the copied output.
 
 Column resize handles appear on the table's header row. Dragging a handle changes that displayed column's width without changing the surrounding GitHub layout.
-The Fit control applies readable column widths and wrapping in one step, while Reset table view clears temporary table changes and returns the table to its initial display.
+The Fit control applies readable column widths and wrapping in one step, while Reset table view clears temporary table changes, including sorting, and returns the table to its initial display.
 
 The Expand control opens the current table in a full-window Focus mode while preserving filters, hidden rows and columns, wrapping, fitted widths, resized columns, and freeze settings. Click Close or press Escape to return to the GitHub file view.
 

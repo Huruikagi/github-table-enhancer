@@ -21,6 +21,7 @@ The separate `pnpm demo:video` command records the store presentation scenario. 
 - Clicking Fit should set readable column widths and enable wrapped cell rendering in one step.
 - Clicking Wrap should switch resized cells from ellipsis clipping to wrapped content.
 - Clicking a hide button should remove that displayed row or column without changing the surrounding GitHub layout.
+- Clicking a column header sort button should cycle body rows through ascending, descending, and original Markdown order while leaving header rows in place.
 - Show hidden should restore hidden rows and columns.
 - Clicking Filter should show and focus a Filter rows input. Typing a runtime, package, status, or keyword should temporarily show only matching body rows while keeping header rows visible.
 - Pressing Escape inside Freeze, Filter, or Copy as should close the popup and return focus to its button.
@@ -107,6 +108,7 @@ Set Frozen rows to `1` or `2`. The table wrapper should scroll vertically while 
 | 29b | Filter | Click Filter and type `rebuild`. | Only matching body rows remain visible, while the header row and any manually hidden rows keep their expected visibility. |
 | 29c | Clear filter | Click Clear filter. | Rows hidden only by filtering are restored. |
 | 29d | Copy as | With a filter or hidden column applied, click Copy as and choose Markdown, CSV, or TSV. | Clipboard output includes the visible header and visible rows only, in the selected format. |
+| 29d-1 | Sort | Click the Area column sort button three times. | Rows sort ascending, then descending, then return to their original Markdown order; hidden and filtered rows retain their state. |
 | 29e | Reset table view | Reapply Rows `2`, Columns `2`, hide one row and one column, click Fit, resize a column, type a filter, then click Reset table view. | Freeze, filter, hidden rows and columns, wrapping, fitted widths, and resized widths are all cleared for this table. |
 | 29f | Focus mode | Apply a filter, hide a column, resize a column, and set Rows `2` / Columns `2`, then click Expand. | The selected table fills the browser window and retains all current table view settings. |
 | 29g | Close Focus mode | Press Escape, reopen Focus mode, then click Close. | Each action restores the GitHub file view and the table keeps the state applied before expansion. |

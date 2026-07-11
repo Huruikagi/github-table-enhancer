@@ -5,6 +5,7 @@ export const TABLE_CONTROLS_PANEL_CLASS = "github-table-enhancer-controls-panel"
 export const TABLE_CONTROLS_TOGGLE_CLASS = "github-table-enhancer-controls-toggle";
 export const TABLE_HIDE_BUTTON_CLASS = "github-table-enhancer-hide-button";
 export const TABLE_COLUMN_RESIZE_HANDLE_CLASS = "github-table-enhancer-column-resize-handle";
+export const TABLE_SORT_BUTTON_CLASS = "github-table-enhancer-sort-button";
 
 export const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
 export const STICKY_CELL_SELECTOR = "[data-github-table-enhancer-sticky='true']";
@@ -20,6 +21,8 @@ export const COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerColumnResi
 export const RESIZED_COLUMNS_DATA_ATTRIBUTE = "githubTableEnhancerResizedColumns";
 export const WRAPPED_COLUMNS_DATA_ATTRIBUTE = "githubTableEnhancerWrappedColumns";
 export const FOCUS_MODE_DATA_ATTRIBUTE = "githubTableEnhancerFocusMode";
+export const ORIGINAL_ROW_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerOriginalRowIndex";
+export const SORT_COLUMN_INDEX_DATA_ATTRIBUTE = "githubTableEnhancerSortColumnIndex";
 export const FOCUS_MODE_BODY_CLASS = "github-table-enhancer-focus-mode-open";
 
 export const STICKY_TOP_PROPERTY = "--gte-sticky-top";

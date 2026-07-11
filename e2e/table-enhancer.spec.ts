@@ -159,6 +159,29 @@ test("filters rows and resets the current table view", async ({ page }) => {
   await expect(table).not.toHaveAttribute("data-github-table-enhancer-wrapped-columns", "true");
 });
 
+test("sorts rows through all three states and resets to the source order", async ({ page }) => {
+  await page.goto(fixtureUrl);
+
+  const wrapper = page.locator(".github-table-enhancer-scroll").nth(1);
+  const rows = wrapper.locator("tbody tr");
+  const sortButton = wrapper.getByRole("button", { name: "Sort by column 2" });
+
+  await sortButton.click();
+  await expect(rows.nth(0).locator("td").nth(1)).toHaveText("Filter");
+  await expect(wrapper.locator("thead th").nth(1)).toHaveAttribute("aria-sort", "ascending");
+
+  await sortButton.click();
+  await expect(rows.nth(0).locator("td").nth(1)).toHaveText("Setup");
+
+  await sortButton.click();
+  await expect(rows.nth(0).locator("td").nth(0)).toContainText("01");
+  await expect(wrapper.locator("thead th").nth(1)).toHaveAttribute("aria-sort", "none");
+
+  await sortButton.click();
+  await wrapper.getByRole("button", { name: "Reset table view" }).click();
+  await expect(rows.nth(0).locator("td").nth(0)).toContainText("01");
+});
+
 test("expands one table into Focus mode and restores the page with Escape", async ({ page }) => {
   await page.goto(fixtureUrl);
 

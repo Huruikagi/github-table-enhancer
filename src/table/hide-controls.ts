@@ -3,6 +3,7 @@ import {
   HIDE_INDEX_DATA_ATTRIBUTE,
   TABLE_HIDE_BUTTON_CLASS,
 } from "./constants";
+import { getOriginalRowIndex, initializeOriginalRowIndexes } from "./sort";
 
 export type HideAction = "hide-row" | "hide-column";
 
@@ -34,12 +35,13 @@ export function resetTableHideControls(table: HTMLTableElement): void {
 
 export function installTableHideControls(table: HTMLTableElement): void {
   resetTableHideControls(table);
+  initializeOriginalRowIndexes(table);
 
-  for (const [rowIndex, row] of Array.from(table.rows).entries()) {
+  for (const row of Array.from(table.rows)) {
     const firstCell = row.cells[0];
 
     if (firstCell) {
-      firstCell.appendChild(createHideButton("hide-row", rowIndex));
+      firstCell.appendChild(createHideButton("hide-row", getOriginalRowIndex(row)));
     }
   }
 

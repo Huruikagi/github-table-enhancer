@@ -235,6 +235,61 @@ body.github-table-enhancer-focus-mode-open {
   transform: translateY(-50%);
 }
 
+.github-table-enhancer-sort-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--fgColor-muted, var(--color-fg-muted));
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  height: 20px;
+  justify-content: center;
+  margin-left: 4px;
+  padding: 0 3px;
+  position: relative;
+  vertical-align: middle;
+  z-index: 7;
+}
+
+.github-table-enhancer-sort-button:hover,
+.github-table-enhancer-sort-button:focus-visible {
+  background: var(
+    --control-transparent-bgColor-hover,
+    var(--color-action-list-item-default-hover-bg)
+  );
+  color: var(--fgColor-default, var(--color-fg-default));
+}
+
+.github-table-enhancer-scroll
+  > table
+  [aria-sort="ascending"]
+  > .github-table-enhancer-sort-button::after {
+  content: "↑";
+}
+
+.github-table-enhancer-scroll
+  > table
+  [aria-sort="descending"]
+  > .github-table-enhancer-sort-button::after {
+  content: "↓";
+}
+
+.github-table-enhancer-scroll
+  > table
+  [aria-sort]:not([aria-sort="none"])
+  > .github-table-enhancer-sort-button {
+  color: var(--fgColor-accent, var(--color-accent-fg));
+}
+
+.github-table-enhancer-scroll
+  > table
+  [aria-sort]:not([aria-sort="none"])
+  > .github-table-enhancer-sort-button {
+  font-size: 0;
+}
+
 .github-table-enhancer-hide-button--column {
   right: 10px;
   top: 2px;
