@@ -56,6 +56,7 @@ function TableControls({
   const inputIdPrefix = useId();
   const hasUserEditedValues = useRef(false);
   const copyToggleRef = useRef<HTMLButtonElement>(null);
+  const copyFirstButtonRef = useRef<HTMLButtonElement>(null);
   const freezeToggleRef = useRef<HTMLButtonElement>(null);
   const filterToggleRef = useRef<HTMLButtonElement>(null);
   const focusToggleRef = useRef<HTMLButtonElement>(null);
@@ -73,6 +74,7 @@ function TableControls({
   const [copyStatus, setCopyStatus] = useState<CopyFormat | "failed" | "idle">("idle");
   const [saveDefaultStatus, setSaveDefaultStatus] = useState<SaveDefaultStatus>("idle");
   const hiddenCount = hiddenRows.length + hiddenColumns.length;
+  const anchorPrefix = `--gte-${inputIdPrefix.replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   const applyValues = (nextValues: FreezeOptions): FreezeOptions => {
     const clampedValues = {
@@ -223,6 +225,12 @@ function TableControls({
   );
 
   useLayoutEffect(() => {
+    if (isCopyOpen) {
+      copyFirstButtonRef.current?.focus();
+    }
+  }, [isCopyOpen]);
+
+  useLayoutEffect(() => {
     if (isOpen) {
       rowsInputRef.current?.focus();
     }
@@ -295,6 +303,11 @@ function TableControls({
     freezeToggleRef.current?.focus();
   };
 
+  const closeCopyPanel = (): void => {
+    setIsCopyOpen(false);
+    copyToggleRef.current?.focus();
+  };
+
   const closeFilterPanel = (): void => {
     setIsFilterOpen(false);
     filterToggleRef.current?.focus();
@@ -344,6 +357,7 @@ function TableControls({
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleFreezePanel}
         ref={freezeToggleRef}
+        style={{ anchorName: `${anchorPrefix}-freeze` }}
         type="button"
       >
         Freeze
@@ -353,6 +367,7 @@ function TableControls({
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleCopyPanel}
         ref={copyToggleRef}
+        style={{ anchorName: `${anchorPrefix}-copy` }}
         type="button"
       >
         Copy as
@@ -373,6 +388,7 @@ function TableControls({
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleFilterPanel}
         ref={filterToggleRef}
+        style={{ anchorName: `${anchorPrefix}-filter` }}
         type="button"
       >
         Filter
@@ -395,7 +411,15 @@ function TableControls({
         {isFocusMode ? "Close" : "Expand"}
       </button>
 
-      {isCopyOpen && <CopyPanel onCopy={copyTable} status={copyStatus} />}
+      {isCopyOpen && (
+        <CopyPanel
+          firstButtonRef={copyFirstButtonRef}
+          onCopy={copyTable}
+          onEscape={closeCopyPanel}
+          positionAnchor={`${anchorPrefix}-copy`}
+          status={copyStatus}
+        />
+      )}
       {isFilterOpen && (
         <FilterPanel
           filterInputRef={filterInputRef}
@@ -403,6 +427,7 @@ function TableControls({
           inputIdPrefix={inputIdPrefix}
           onEscape={closeFilterPanel}
           onFilterQueryChange={setFilterQuery}
+          positionAnchor={`${anchorPrefix}-filter`}
         />
       )}
       {isOpen && (
@@ -413,6 +438,7 @@ function TableControls({
           onClose={closeFreezePanel}
           onSaveDefault={onSaveDefault ? saveDefault : undefined}
           onUpdateValues={updateValues}
+          positionAnchor={`${anchorPrefix}-freeze`}
           rowsInputRef={rowsInputRef}
           saveDefaultStatus={saveDefaultStatus}
           values={values}

@@ -103,8 +103,12 @@ body.github-table-enhancer-focus-mode-open {
   box-shadow: var(--shadow-floating-small, 0 8px 24px rgb(140 149 159 / 20%));
   display: flex;
   gap: 8px;
-  margin-inline-start: 8px;
   padding: 6px;
+  position: absolute;
+  left: anchor(left);
+  top: anchor(bottom);
+  margin-block-start: 4px;
+  z-index: 6;
 }
 
 .github-table-enhancer-controls-panel label {

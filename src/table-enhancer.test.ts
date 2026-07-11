@@ -630,6 +630,28 @@ describe("wrapTable", () => {
     expect(getInput("Filter rows")).toBeInstanceOf(HTMLInputElement);
   });
 
+  it("focuses the first copy action and closes the popup with Escape", () => {
+    renderMarkdownTables(`
+      <table><tbody><tr><td>Runtime</td><td>Status</td></tr></tbody></table>
+    `);
+
+    wrapTable(getTable());
+    clickButton("Copy as");
+    const markdownButton = getButton("Markdown");
+
+    expect(document.activeElement).toBe(markdownButton);
+    act(() => {
+      markdownButton.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Escape" }));
+    });
+
+    expect(
+      Array.from(document.querySelectorAll<HTMLButtonElement>("button")).some(
+        (button) => button.textContent === "Markdown",
+      ),
+    ).toBe(false);
+    expect(document.activeElement).toBe(getButton("Copy as"));
+  });
+
   it("copies the current visible table view to the clipboard", async () => {
     const clipboard = installFakeClipboard();
     renderMarkdownTables(`

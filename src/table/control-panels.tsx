@@ -24,10 +24,14 @@ type FilterPanelProps = {
   inputIdPrefix: string;
   onFilterQueryChange: (filterQuery: string) => void;
   onEscape: () => void;
+  positionAnchor: string;
 };
 
 type CopyPanelProps = {
+  firstButtonRef: Ref<HTMLButtonElement>;
   onCopy: (format: CopyFormat) => void;
+  onEscape: () => void;
+  positionAnchor: string;
   status: CopyFormat | "failed" | "idle";
 };
 
@@ -38,6 +42,7 @@ type FreezePanelProps = {
   onClose: () => void;
   onSaveDefault?: () => void;
   onUpdateValues: (values: FreezeOptions) => FreezeOptions;
+  positionAnchor: string;
   rowsInputRef: Ref<HTMLInputElement>;
   saveDefaultStatus: SaveDefaultStatus;
   values: FreezeOptions;
@@ -93,9 +98,10 @@ export function FilterPanel({
   inputIdPrefix,
   onFilterQueryChange,
   onEscape,
+  positionAnchor,
 }: FilterPanelProps): VNode {
   return (
-    <div className={TABLE_CONTROLS_PANEL_CLASS}>
+    <div className={TABLE_CONTROLS_PANEL_CLASS} style={{ positionAnchor }}>
       <label htmlFor={`${inputIdPrefix}-filter`}>
         Filter rows
         <input
@@ -126,11 +132,29 @@ export function FilterPanel({
   );
 }
 
-export function CopyPanel({ onCopy, status }: CopyPanelProps): VNode {
+export function CopyPanel({
+  firstButtonRef,
+  onCopy,
+  onEscape,
+  positionAnchor,
+  status,
+}: CopyPanelProps): VNode {
   return (
-    <div aria-live="polite" className={TABLE_CONTROLS_PANEL_CLASS}>
+    <div aria-live="polite" className={TABLE_CONTROLS_PANEL_CLASS} style={{ positionAnchor }}>
       {(["markdown", "csv", "tsv"] as const).map((format) => (
-        <button key={format} onClick={() => onCopy(format)} type="button">
+        <button
+          key={format}
+          onClick={() => onCopy(format)}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.preventDefault();
+              event.stopPropagation();
+              onEscape();
+            }
+          }}
+          ref={format === "markdown" ? firstButtonRef : undefined}
+          type="button"
+        >
           {status === format ? `Copied ${COPY_FORMAT_LABELS[format]}` : COPY_FORMAT_LABELS[format]}
         </button>
       ))}
@@ -146,12 +170,13 @@ export function FreezePanel({
   onClose,
   onSaveDefault,
   onUpdateValues,
+  positionAnchor,
   rowsInputRef,
   saveDefaultStatus,
   values,
 }: FreezePanelProps): VNode {
   return (
-    <div className={TABLE_CONTROLS_PANEL_CLASS}>
+    <div className={TABLE_CONTROLS_PANEL_CLASS} style={{ positionAnchor }}>
       <label htmlFor={`${inputIdPrefix}-rows`}>
         Rows
         <FreezeNumberInput

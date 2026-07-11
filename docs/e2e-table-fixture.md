@@ -8,7 +8,7 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Wide tables should scroll horizontally instead of forcing every column to become narrow.
 - Normal-width tables should still look like regular GitHub Markdown tables.
 - Each enhanced table should show a compact Freeze control above the table.
-- Opening the Freeze control should show inputs for frozen rows and frozen columns.
+- Opening the Freeze control should show a popup below the button with inputs for frozen rows and frozen columns.
 - Tables with a preceding heading should show a Save default button in the Freeze control.
 - Tables without a preceding heading should not offer Save default.
 - Clicking Save default should persist the current rows and columns for the nearest preceding heading text.
@@ -21,7 +21,7 @@ Use this page to manually verify the extension on an actual GitHub Markdown blob
 - Clicking a hide button should remove that displayed row or column without changing the surrounding GitHub layout.
 - Show hidden should restore hidden rows and columns.
 - Clicking Filter should show and focus a Filter rows input. Typing a runtime, package, status, or keyword should temporarily show only matching body rows while keeping header rows visible.
-- Pressing Escape while Filter rows is focused should close the Filter panel and return focus to the Filter button.
+- Pressing Escape inside Freeze, Filter, or Copy as should close the popup and return focus to its button.
 - Clear filter should restore rows hidden only by the filter, while manually hidden rows remain hidden until Show hidden is clicked.
 - Clicking Copy as should offer Markdown, CSV, and TSV copy actions.
 - Copy as should copy only the current visible table view, excluding hidden rows, filtered rows, and hidden columns.
