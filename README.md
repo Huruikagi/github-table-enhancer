@@ -6,6 +6,8 @@
 
 A small, unofficial Chrome extension that makes wide tables easier to read and review in GitHub Markdown file previews.
 
+[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/gnnboemmkojioleagajnphgfdpdemjlg)
+
 ## Scope
 
 - Runs only on GitHub Markdown blob file preview pages, such as `https://github.com/owner/repo/blob/main/docs/file.md`.
@@ -84,7 +86,9 @@ For manual Chrome checks, use [docs/e2e-table-fixture.md](docs/e2e-table-fixture
 
 ## Chrome Web Store
 
-Chrome Web Store submission notes live in [docs/chrome-web-store-listing.md](docs/chrome-web-store-listing.md) and [docs/chrome-web-store-privacy.md](docs/chrome-web-store-privacy.md).
+Install the published extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/gnnboemmkojioleagajnphgfdpdemjlg).
+
+Chrome Web Store listing and privacy notes live in [docs/chrome-web-store-listing.md](docs/chrome-web-store-listing.md) and [docs/chrome-web-store-privacy.md](docs/chrome-web-store-privacy.md).
 
 The public privacy policy page is [docs/privacy-policy.md](docs/privacy-policy.md). When GitHub Pages is enabled for the `docs` folder on `main`, the Chrome Web Store privacy policy URL is:
 
