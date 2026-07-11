@@ -176,7 +176,10 @@ export function FreezePanel({
   values,
 }: FreezePanelProps): VNode {
   return (
-    <div className={TABLE_CONTROLS_PANEL_CLASS} style={{ positionAnchor }}>
+    <div
+      className={`${TABLE_CONTROLS_PANEL_CLASS} ${TABLE_CONTROLS_PANEL_CLASS}--freeze`}
+      style={{ positionAnchor }}
+    >
       <label htmlFor={`${inputIdPrefix}-rows`}>
         Rows
         <FreezeNumberInput

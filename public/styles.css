@@ -129,6 +129,11 @@ body.github-table-enhancer-focus-mode-open {
   z-index: 6;
 }
 
+.github-table-enhancer-controls-panel--freeze {
+  flex-wrap: wrap;
+  max-width: calc(100vw - 16px);
+}
+
 .github-table-enhancer-controls-panel label {
   align-items: center;
   color: var(--fgColor-muted, var(--color-fg-muted, #57606a));
