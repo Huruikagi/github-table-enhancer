@@ -23,7 +23,7 @@ A small, unofficial Chrome extension that makes wide tables easier to read and r
 - Adds a compact Freeze control for keeping the first N displayed rows or columns visible while scrolling.
 - Saves Freeze defaults per nearest preceding heading, then reapplies them when the same heading is viewed again.
 - Lets you temporarily hide displayed rows or columns and restore them with Show hidden.
-- Lets you temporarily filter table rows by case-insensitive text matching without saving the filter.
+- Lets you temporarily filter table rows by case-insensitive text or regular expressions without saving the filter.
 - Sorts body rows from column headers in ascending, descending, or original Markdown order.
 - Lets you copy the currently visible table view as Markdown, CSV, or TSV.
 - Lets you auto-fit displayed columns into readable widths with Fit.
@@ -79,7 +79,7 @@ Each table gets compact controls above it. The Freeze panel can temporarily free
 
 Hide buttons appear while hovering table cells. Row hide buttons appear on the first cell in each row, and column hide buttons appear on header cells. Hidden rows and columns are temporary and can be restored with Show hidden.
 
-The Filter control can temporarily show only body rows whose row text contains a case-insensitive search term. Header rows stay visible, Clear filter restores filtered rows, and manually hidden rows remain hidden until Show hidden is used.
+The Filter control can temporarily show only body rows whose row text contains a case-insensitive search term. Regular expression mode supports more precise matching and reports invalid expressions without hiding rows. Header rows stay visible, Clear filter restores filtered rows, and manually hidden rows remain hidden until Show hidden is used.
 
 Each column header includes a sort button. Repeated clicks cycle through ascending, descending, and original Markdown order. Numeric and date-like values are compared by value, while other text uses case-insensitive natural ordering. Sorting is temporary and keeps filters and manually hidden rows attached to the same rows.
 

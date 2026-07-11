@@ -48,6 +48,12 @@ Choose the filter icon and type a word or phrase. Matching is case-insensitive a
 
 Filtering is temporary and is not saved as a default.
 
+## Sort table rows
+
+Select the sort button in a column header to sort the table body by that column. Repeated selections cycle through ascending, descending, and original Markdown order. Numeric and date-like values are compared by value; other text uses case-insensitive natural ordering.
+
+Sorting is temporary. It preserves the identity of manually hidden and filtered rows as their positions change.
+
 ## Hide and restore rows or columns
 
 Hover a header cell to reveal its column hide button, or hover the first cell of a row to reveal its row hide button. Hidden items are removed only from your current table view.
@@ -78,7 +84,7 @@ Select the expand icon to open one table in a full-window workspace. Focus mode 
 
 ## Reset a table view
 
-The reset icon returns the table to its initial display state. It clears temporary filters, hidden rows and columns, wrapping, fitted or resized widths, and freeze settings. Saved heading defaults are not deleted.
+The reset icon returns the table to its initial display state. It clears temporary filters, sorting, hidden rows and columns, wrapping, fitted or resized widths, and freeze settings. Saved heading defaults are not deleted.
 
 ## Keeping this guide accurate
 

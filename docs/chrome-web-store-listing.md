@@ -8,7 +8,7 @@ An unofficial extension that makes wide tables easier to read in GitHub Markdown
 
 Table Enhancer for GitHub is a small, unofficial Chrome extension for GitHub Markdown blob pages.
 
-It improves wide Markdown tables in file previews by keeping them readable inside a horizontal scroll container. It also adds compact controls for freezing displayed rows and columns, hiding or filtering rows and columns temporarily, copying the currently visible table as Markdown, CSV, or TSV, fitting columns into readable widths, and resizing columns while reviewing large tables.
+It improves wide Markdown tables in file previews by keeping them readable inside a horizontal scroll container. Compact controls let you freeze displayed rows and columns, hide rows or columns temporarily, filter rows with text or regular expressions, and sort body rows from column headers. You can copy the currently visible table as Markdown, CSV, or TSV, fit or resize columns, and open an individual table in a full-window Focus mode. A reset control returns temporary table changes to their initial state.
 
 Current scope:
 
