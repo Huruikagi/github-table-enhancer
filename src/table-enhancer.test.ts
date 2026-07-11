@@ -336,6 +336,11 @@ describe("wrapTable", () => {
 
     wrapTable(table);
     const wrapper = table.closest<HTMLElement>(`.${TABLE_WRAPPER_CLASS}`);
+    const controls = wrapper?.querySelector<HTMLElement>(TABLE_CONTROLS_TAG);
+    if (controls) {
+      controls.getBoundingClientRect = () =>
+        ({ height: 48 }) as ReturnType<HTMLElement["getBoundingClientRect"]>;
+    }
 
     clickButton("Expand");
 
@@ -343,6 +348,7 @@ describe("wrapTable", () => {
     expect(document.body.classList.contains("github-table-enhancer-focus-mode-open")).toBe(true);
     expect(getButton("Close").ariaPressed).toBe("true");
     expect(wrapper?.querySelector("table")).toBe(table);
+    expect(wrapper?.style.getPropertyValue("--gte-focus-mode-controls-height")).toBe("48px");
 
     clickButton("Close");
 
@@ -350,6 +356,7 @@ describe("wrapTable", () => {
     expect(document.body.classList.contains("github-table-enhancer-focus-mode-open")).toBe(false);
     expect(getButton("Expand").ariaPressed).toBe("false");
     expect(wrapper?.querySelector("table")).toBe(table);
+    expect(wrapper?.style.getPropertyValue("--gte-focus-mode-controls-height")).toBe("");
   });
 
   it("closes Focus mode with Escape and returns focus to Expand", () => {

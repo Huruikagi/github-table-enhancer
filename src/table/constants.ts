@@ -25,4 +25,5 @@ export const FOCUS_MODE_BODY_CLASS = "github-table-enhancer-focus-mode-open";
 export const STICKY_TOP_PROPERTY = "--gte-sticky-top";
 export const STICKY_LEFT_PROPERTY = "--gte-sticky-left";
 export const STICKY_Z_INDEX_PROPERTY = "--gte-sticky-z-index";
+export const FOCUS_MODE_CONTROLS_HEIGHT_PROPERTY = "--gte-focus-mode-controls-height";
 export const MIN_COLUMN_WIDTH = 48;

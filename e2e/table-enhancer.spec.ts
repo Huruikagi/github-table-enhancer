@@ -172,6 +172,21 @@ test("expands one table into Focus mode and restores the page with Escape", asyn
   await expect(firstWrapper.getByRole("button", { name: "Close" })).toBeVisible();
   await expect(table).toHaveAttribute("data-github-table-enhancer-wrapped-columns", "true");
 
+  await firstWrapper.getByRole("button", { name: "Freeze" }).click();
+  await firstWrapper.getByLabel("Frozen rows").fill("1");
+  await firstWrapper.evaluate((wrapper) => {
+    wrapper.scrollTop = 200;
+  });
+  const controlsBox = await firstWrapper.locator("gte-table-controls").boundingBox();
+  const frozenRowBox = await table.locator("thead tr").boundingBox();
+  expect(controlsBox).not.toBeNull();
+  expect(frozenRowBox).not.toBeNull();
+  expect(frozenRowBox?.y).toBeGreaterThanOrEqual(
+    (controlsBox?.y ?? 0) + (controlsBox?.height ?? 0),
+  );
+
+  await page.keyboard.press("Escape");
+  await expect(firstWrapper.getByLabel("Frozen rows")).not.toBeVisible();
   await page.keyboard.press("Escape");
 
   await expect(firstWrapper).not.toHaveAttribute("data-github-table-enhancer-focus-mode", "true");

@@ -236,6 +236,12 @@ body.github-table-enhancer-focus-mode-open {
   z-index: var(--gte-sticky-z-index, auto);
 }
 
+.github-table-enhancer-scroll[data-github-table-enhancer-focus-mode="true"]
+  > table
+  [data-github-table-enhancer-sticky="true"] {
+  top: calc(var(--gte-sticky-top, 0px) + var(--gte-focus-mode-controls-height, 0px));
+}
+
 .github-table-enhancer-scroll > table [data-github-table-enhancer-frozen-row-boundary="true"] {
   border-bottom-width: 2px;
 }
