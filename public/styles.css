@@ -33,14 +33,24 @@ body.github-table-enhancer-focus-mode-open {
 .github-table-enhancer-scroll[data-github-table-enhancer-focus-mode="true"]::before {
   background: var(--bgColor-default, var(--color-canvas-default, #ffffff));
   content: "";
-  display: block;
-  height: var(--gte-focus-mode-controls-height, 0px);
+  height: calc(16px + var(--gte-focus-mode-controls-height, 0px));
   left: 0;
-  margin-block-end: calc(-1 * var(--gte-focus-mode-controls-height, 0px));
   pointer-events: none;
-  position: sticky;
+  position: fixed;
   top: 0;
   width: 100%;
+  z-index: 4;
+}
+
+.github-table-enhancer-scroll[data-github-table-enhancer-focus-mode="true"]::after {
+  background: var(--bgColor-default, var(--color-canvas-default, #ffffff));
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  width: 16px;
   z-index: 4;
 }
 

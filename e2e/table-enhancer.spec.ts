@@ -179,20 +179,31 @@ test("expands one table into Focus mode and restores the page with Escape", asyn
   });
   const controlsBox = await firstWrapper.locator("gte-table-controls").boundingBox();
   const frozenRowBox = await table.locator("thead tr").boundingBox();
-  const focusMask = await firstWrapper.evaluate((wrapper) => {
-    const styles = getComputedStyle(wrapper, "::before");
+  const focusMasks = await firstWrapper.evaluate((wrapper) => {
+    const topMaskStyles = getComputedStyle(wrapper, "::before");
+    const leftMaskStyles = getComputedStyle(wrapper, "::after");
 
     return {
-      backgroundColor: styles.backgroundColor,
-      height: styles.height,
-      position: styles.position,
+      left: {
+        backgroundColor: leftMaskStyles.backgroundColor,
+        position: leftMaskStyles.position,
+        width: leftMaskStyles.width,
+      },
+      top: {
+        backgroundColor: topMaskStyles.backgroundColor,
+        height: topMaskStyles.height,
+        position: topMaskStyles.position,
+      },
     };
   });
   expect(controlsBox).not.toBeNull();
   expect(frozenRowBox).not.toBeNull();
-  expect(focusMask.backgroundColor).toBe("rgb(255, 255, 255)");
-  expect(Number.parseFloat(focusMask.height)).toBeGreaterThan(0);
-  expect(focusMask.position).toBe("sticky");
+  expect(focusMasks.top.backgroundColor).toBe("rgb(255, 255, 255)");
+  expect(Number.parseFloat(focusMasks.top.height)).toBeGreaterThan(16);
+  expect(focusMasks.top.position).toBe("fixed");
+  expect(focusMasks.left.backgroundColor).toBe("rgb(255, 255, 255)");
+  expect(focusMasks.left.position).toBe("fixed");
+  expect(focusMasks.left.width).toBe("16px");
   expect(frozenRowBox?.y).toBeGreaterThanOrEqual(
     (controlsBox?.y ?? 0) + (controlsBox?.height ?? 0),
   );
