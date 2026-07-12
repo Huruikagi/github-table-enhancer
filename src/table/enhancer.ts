@@ -19,6 +19,12 @@ export function isMarkdownBlobPage(pathname = window.location.pathname): boolean
   return /^\/[^/]+\/[^/]+\/blob\/.+\.md$/i.test(pathname);
 }
 
+export function getRepositoryKey(pathname = window.location.pathname): string | null {
+  const match = /^\/([^/]+)\/([^/]+)\/blob\//.exec(pathname);
+
+  return match ? `${match[1].toLowerCase()}/${match[2].toLowerCase()}` : null;
+}
+
 export function findMarkdownContainer(root: ParentNode = document): ParentNode {
   return (
     root.querySelector(".markdown-body") ?? root.querySelector("[data-testid='readme']") ?? root
@@ -64,10 +70,15 @@ export function wrapTable(table: HTMLTableElement): void {
   const wrapper = document.createElement("div");
   wrapper.className = TABLE_WRAPPER_CLASS;
   const headingText = findPreviousHeadingText(table);
+  const repository = getRepositoryKey();
   const controls = createTableControls(table, (values) => applyTableFreeze(table, values), {
-    defaultValuesPromise: headingText ? readHeadingFreezeRule(headingText) : null,
+    defaultValuesPromise:
+      headingText && repository ? readHeadingFreezeRule(repository, headingText) : null,
     headingText,
-    onSaveDefault: headingText ? (values) => saveHeadingFreezeRule(headingText, values) : undefined,
+    onSaveDefault:
+      headingText && repository
+        ? (values) => saveHeadingFreezeRule(repository, headingText, values)
+        : undefined,
   });
   table.dataset.githubTableEnhancer = "true";
   parent.insertBefore(wrapper, table);

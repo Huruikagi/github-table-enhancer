@@ -38,7 +38,9 @@ Select **Freeze** to keep the first displayed rows and leftmost columns in view 
 
 ![The Freeze panel showing one frozen row and one frozen column.]({{ site.baseurl }}/store-assets/screenshots/user-guide-freeze.png)
 
-If a table has a preceding heading, choose **Save default** to remember those freeze values for tables under the same heading. Defaults are stored locally in your browser and can be changed at any time.
+If a table has a preceding heading, choose **Save default** to remember those freeze values for tables under the same heading in the same GitHub repository. Defaults are stored locally in your browser and can be changed at any time; they do not apply to other repositories, even when the heading text matches.
+
+Freeze defaults saved by older versions were keyed only by heading text. They are not migrated because their repository cannot be determined safely. Save the default again after updating to use the new repository-specific rule.
 
 ## Filter a table without changing it
 

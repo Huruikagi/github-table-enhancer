@@ -14,7 +14,7 @@ Current scope:
 
 - Works on GitHub Markdown blob file preview pages, such as `https://github.com/owner/repo/blob/main/docs/file.md`.
 - Does not run on issues, pull requests, discussions, repository README landing pages, or rendered Markdown outside GitHub blob views.
-- Uses a content script on GitHub Markdown blob pages and the `storage` permission for local heading-based freeze defaults.
+- Uses a content script on GitHub Markdown blob pages and the `storage` permission for local repository-specific, heading-based freeze defaults.
 - Does not collect, transmit, sell, or share user data.
 
 This project is not affiliated with, sponsored by, or endorsed by GitHub.

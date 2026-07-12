@@ -7,6 +7,7 @@ import {
   enhanceTables,
   findMarkdownContainer,
   findPreviousHeadingText,
+  getRepositoryKey,
   isMarkdownBlobPage,
   startTableEnhancer,
   TABLE_COLUMN_RESIZE_HANDLE_CLASS,
@@ -203,6 +204,16 @@ describe("isMarkdownBlobPage", () => {
   });
 });
 
+describe("getRepositoryKey", () => {
+  it("returns a case-insensitive owner/repository key for blob pages", () => {
+    expect(getRepositoryKey("/Owner/Repository/blob/main/docs/index.md")).toBe("owner/repository");
+  });
+
+  it("returns null outside a repository blob path", () => {
+    expect(getRepositoryKey("/owner/repo/issues/1")).toBeNull();
+  });
+});
+
 describe("findMarkdownContainer", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
@@ -253,6 +264,7 @@ describe("findPreviousHeadingText", () => {
 describe("wrapTable", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
+    setPathname("/owner/repo/blob/main/docs/index.md");
     uninstallFakeChromeStorage();
     uninstallFakeClipboard();
   });
@@ -892,9 +904,11 @@ describe("wrapTable", () => {
   it("applies a saved heading freeze rule as the initial value", async () => {
     installFakeChromeStorage({
       [FREEZE_RULE_SETTINGS_STORAGE_KEY]: {
-        version: 1,
-        headingRules: {
-          "Release Matrix": { rows: 1, columns: 1 },
+        version: 2,
+        repositoryRules: {
+          "owner/repo": {
+            "Release Matrix": { rows: 1, columns: 1 },
+          },
         },
       },
     });
@@ -940,15 +954,59 @@ describe("wrapTable", () => {
 
     expect(getButton("Saved").disabled).toBe(false);
     expect(storage[FREEZE_RULE_SETTINGS_STORAGE_KEY]).toEqual({
-      version: 1,
-      headingRules: {
-        "Release Matrix": { rows: 1, columns: 1 },
+      version: 2,
+      repositoryRules: {
+        "owner/repo": {
+          "Release Matrix": { rows: 1, columns: 1 },
+        },
       },
     });
 
     setFreezeInput("Frozen columns", "2");
 
     expect(getButton("Save default").disabled).toBe(false);
+  });
+
+  it("does not apply a legacy heading-only freeze rule", async () => {
+    installFakeChromeStorage({
+      [FREEZE_RULE_SETTINGS_STORAGE_KEY]: {
+        version: 1,
+        headingRules: {
+          "Release Matrix": { rows: 1, columns: 1 },
+        },
+      },
+    });
+    renderMarkdownTables(`
+      <h2>Release Matrix</h2>
+      <table><tbody><tr><td>one</td><td>two</td></tr></tbody></table>
+    `);
+
+    wrapTable(getTable());
+    await flushPromises();
+
+    expect(getTable().rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
+  });
+
+  it("does not apply a rule saved for another repository", async () => {
+    installFakeChromeStorage({
+      [FREEZE_RULE_SETTINGS_STORAGE_KEY]: {
+        version: 2,
+        repositoryRules: {
+          "another/repository": {
+            "Release Matrix": { rows: 1, columns: 1 },
+          },
+        },
+      },
+    });
+    renderMarkdownTables(`
+      <h2>Release Matrix</h2>
+      <table><tbody><tr><td>one</td><td>two</td></tr></tbody></table>
+    `);
+
+    wrapTable(getTable());
+    await flushPromises();
+
+    expect(getTable().rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
   });
 
   it("does not show the save default control without a preceding heading", () => {

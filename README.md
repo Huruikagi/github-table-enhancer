@@ -77,7 +77,7 @@ production URL match is exercised without depending on live GitHub pages.
 ## Behavior
 
 Markdown preview tables are wrapped in a horizontal scroll container so long cell content does not force every column to become narrow.
-Each table gets compact controls above it. The Freeze panel can temporarily freeze the first N displayed rows and the first N left columns, reset those values, and save defaults for tables that have a preceding heading.
+Each table gets compact controls above it. The Freeze panel can temporarily freeze the first N displayed rows and the first N left columns, reset those values, and save defaults for tables that have a preceding heading. Saved defaults apply only to matching headings in the same GitHub repository.
 
 Hide buttons appear while hovering table cells. Row hide buttons appear on the first cell in each row, and column hide buttons appear on header cells. Hidden rows and columns are temporary and can be restored with Show hidden.
 

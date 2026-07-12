@@ -3,8 +3,8 @@ import type { FreezeOptions } from "./freeze";
 const FREEZE_RULE_SETTINGS_STORAGE_KEY = "githubTableEnhancerFreezeRuleSettings";
 
 export type FreezeRuleSettings = {
-  version: 1;
-  headingRules: Record<string, FreezeOptions>;
+  version: 2;
+  repositoryRules: Record<string, Record<string, FreezeOptions>>;
 };
 
 type ChromeStorageArea = {
@@ -36,28 +36,44 @@ function isFreezeOptions(value: unknown): value is FreezeOptions {
 
 function normalizeSettings(value: unknown): FreezeRuleSettings {
   if (!value || typeof value !== "object") {
-    return { version: 1, headingRules: {} };
+    return { version: 2, repositoryRules: {} };
   }
 
   const settings = value as Partial<FreezeRuleSettings>;
-  const headingRules: Record<string, FreezeOptions> = {};
+  const repositoryRules: Record<string, Record<string, FreezeOptions>> = {};
 
-  if (settings.headingRules && typeof settings.headingRules === "object") {
-    for (const [headingText, options] of Object.entries(settings.headingRules)) {
-      if (isFreezeOptions(options)) {
-        headingRules[headingText] = options;
+  if (
+    settings.version === 2 &&
+    settings.repositoryRules &&
+    typeof settings.repositoryRules === "object"
+  ) {
+    for (const [repository, rules] of Object.entries(settings.repositoryRules)) {
+      if (!rules || typeof rules !== "object") {
+        continue;
+      }
+
+      const headingRules: Record<string, FreezeOptions> = {};
+
+      for (const [headingText, options] of Object.entries(rules)) {
+        if (isFreezeOptions(options)) {
+          headingRules[headingText] = options;
+        }
+      }
+
+      if (Object.keys(headingRules).length > 0) {
+        repositoryRules[repository] = headingRules;
       }
     }
   }
 
-  return { version: 1, headingRules };
+  return { version: 2, repositoryRules };
 }
 
 export async function readFreezeRuleSettings(): Promise<FreezeRuleSettings> {
   const storage = getStorageArea();
 
   if (!storage) {
-    return { version: 1, headingRules: {} };
+    return { version: 2, repositoryRules: {} };
   }
 
   const items = await storage.get(FREEZE_RULE_SETTINGS_STORAGE_KEY);
@@ -65,13 +81,17 @@ export async function readFreezeRuleSettings(): Promise<FreezeRuleSettings> {
   return normalizeSettings(items[FREEZE_RULE_SETTINGS_STORAGE_KEY]);
 }
 
-export async function readHeadingFreezeRule(headingText: string): Promise<FreezeOptions | null> {
+export async function readHeadingFreezeRule(
+  repository: string,
+  headingText: string,
+): Promise<FreezeOptions | null> {
   const settings = await readFreezeRuleSettings();
 
-  return settings.headingRules[headingText] ?? null;
+  return settings.repositoryRules[repository]?.[headingText] ?? null;
 }
 
 export async function saveHeadingFreezeRule(
+  repository: string,
   headingText: string,
   options: FreezeOptions,
 ): Promise<void> {
@@ -85,10 +105,13 @@ export async function saveHeadingFreezeRule(
 
   await storage.set({
     [FREEZE_RULE_SETTINGS_STORAGE_KEY]: {
-      version: 1,
-      headingRules: {
-        ...settings.headingRules,
-        [headingText]: options,
+      version: 2,
+      repositoryRules: {
+        ...settings.repositoryRules,
+        [repository]: {
+          ...settings.repositoryRules[repository],
+          [headingText]: options,
+        },
       },
     },
   });

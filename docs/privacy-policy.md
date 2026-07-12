@@ -17,7 +17,7 @@ Table Enhancer for GitHub does not collect, transmit, sell, or share user data.
 
 The extension uses Chrome's `storage` permission only to save the user's table display preferences locally in the user's browser with `chrome.storage.local`.
 
-These preferences are used only by the extension to restore heading-based table freeze defaults on matching GitHub Markdown blob pages.
+These preferences are used only by the extension to restore repository-specific, heading-based table freeze defaults on matching GitHub Markdown blob pages.
 
 ## Network Requests
 

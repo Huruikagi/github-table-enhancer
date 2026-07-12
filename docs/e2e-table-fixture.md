@@ -11,7 +11,7 @@ The separate `pnpm demo:video` command records the store presentation scenario. 
 - Normal-width tables should still look like regular GitHub Markdown tables.
 - Each enhanced table should show a compact Freeze control above the table.
 - Opening the Freeze control should show a popup below the button with inputs for frozen rows and frozen columns.
-- Tables with a preceding heading should show a Save default button in the Freeze control.
+- Tables with a preceding heading should show a Save default button in the Freeze control. Saved defaults apply only within the current repository.
 - Tables without a preceding heading should not offer Save default.
 - Clicking Save default should persist the current rows and columns for the nearest preceding heading text.
 - Reloading the page should apply the saved default to tables with the same preceding heading text.
