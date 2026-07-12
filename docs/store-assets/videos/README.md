@@ -12,10 +12,10 @@ The recording uses a deterministic local GitHub-style fixture, loads the unpacke
 
 ## User guide screenshots
 
-Run the following command to rebuild the extension and regenerate the PNG screenshots used by the English GitHub Pages user guide:
+Run the following command to rebuild the extension and regenerate the PNG screenshots used by the English GitHub Pages user guide and the Chrome Web Store freeze-controls screenshot:
 
 ```powershell
 pnpm guide:screenshots
 ```
 
-Changed images are written to `docs/store-assets/screenshots/`. Existing images whose rendered pixels are unchanged are left untouched, so the command does not create a Git change solely from PNG encoding differences. The test uses the same deterministic GitHub-style fixture and unpacked `dist` extension as the demo recording. Edit `e2e/user-guide-screenshots.spec.ts` to update the fixture or the captured states.
+Changed images are written to `docs/store-assets/screenshots/`, including `github-table-freeze-controls-1280x800.png`. Existing images whose rendered pixels are unchanged are left untouched, so the command does not create a Git change solely from PNG encoding differences. The tests use deterministic GitHub-style fixtures and the unpacked `dist` extension. Edit `e2e/user-guide-screenshots.spec.ts` to update the user guide fixture, the Chrome Web Store freeze-controls fixture, or the captured states.
