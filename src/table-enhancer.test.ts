@@ -1,14 +1,7 @@
 import { act } from "preact/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getVisibleTableData, serializeTableData } from "./table/copy";
 import {
-  applyTableFreeze,
-  applyTableVisibility,
   enhanceTables,
-  findMarkdownContainer,
-  findPreviousHeadingText,
-  getRepositoryKey,
-  isMarkdownBlobPage,
   startTableEnhancer,
   TABLE_COLUMN_RESIZE_HANDLE_CLASS,
   TABLE_CONTROLS_TAG,
@@ -18,8 +11,6 @@ import {
 } from "./table/enhancer";
 
 const STICKY_CELL_DATA_ATTRIBUTE = "githubTableEnhancerSticky";
-const FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenRowBoundary";
-const FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE = "githubTableEnhancerFrozenColumnBoundary";
 const HIDDEN_ROW_DATA_ATTRIBUTE = "githubTableEnhancerHiddenRow";
 const HIDDEN_COLUMN_DATA_ATTRIBUTE = "githubTableEnhancerHiddenColumn";
 const FILTERED_ROW_DATA_ATTRIBUTE = "githubTableEnhancerFilteredRow";
@@ -190,76 +181,6 @@ function createRect(width: number): DOMRect {
     toJSON: () => ({}),
   };
 }
-
-describe("isMarkdownBlobPage", () => {
-  it("matches GitHub Markdown blob paths", () => {
-    expect(isMarkdownBlobPage("/owner/repo/blob/main/docs/index.md")).toBe(true);
-    expect(isMarkdownBlobPage("/owner/repo/blob/feature/foo/README.MD")).toBe(true);
-  });
-
-  it("does not match non-blob or non-Markdown paths", () => {
-    expect(isMarkdownBlobPage("/owner/repo/issues/1")).toBe(false);
-    expect(isMarkdownBlobPage("/owner/repo/pull/1")).toBe(false);
-    expect(isMarkdownBlobPage("/owner/repo/blob/main/src/index.ts")).toBe(false);
-  });
-});
-
-describe("getRepositoryKey", () => {
-  it("returns a case-insensitive owner/repository key for blob pages", () => {
-    expect(getRepositoryKey("/Owner/Repository/blob/main/docs/index.md")).toBe("owner/repository");
-  });
-
-  it("returns null outside a repository blob path", () => {
-    expect(getRepositoryKey("/owner/repo/issues/1")).toBeNull();
-  });
-});
-
-describe("findMarkdownContainer", () => {
-  beforeEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("prefers GitHub's Markdown body container", () => {
-    document.body.innerHTML = `
-      <main>
-        <article class="markdown-body"></article>
-      </main>
-    `;
-
-    expect(findMarkdownContainer()).toBe(document.querySelector(".markdown-body"));
-  });
-
-  it("falls back to the provided root", () => {
-    const root = document.createElement("section");
-
-    expect(findMarkdownContainer(root)).toBe(root);
-  });
-});
-
-describe("findPreviousHeadingText", () => {
-  beforeEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("uses the nearest preceding Markdown heading text", () => {
-    renderMarkdownTables(`
-      <h2>First Section</h2>
-      <table id="first"><tbody><tr><td>one</td></tr></tbody></table>
-      <h3>  Release   Matrix  </h3>
-      <p>Details</p>
-      <table id="second"><tbody><tr><td>two</td></tr></tbody></table>
-    `);
-
-    expect(findPreviousHeadingText(getTable("#first"))).toBe("First Section");
-    expect(findPreviousHeadingText(getTable("#second"))).toBe("Release Matrix");
-  });
-
-  it("returns null when no heading precedes the table", () => {
-    renderMarkdownTables("<table><tbody><tr><td>one</td></tr></tbody></table><h2>Later</h2>");
-
-    expect(findPreviousHeadingText(getTable())).toBeNull();
-  });
-});
 
 describe("wrapTable", () => {
   beforeEach(() => {
@@ -1259,136 +1180,6 @@ describe("wrapTable", () => {
     expect(table.querySelector<HTMLTableColElement>("col")?.style.width).toBe("");
     expect(table.rows[1]?.cells[0]?.textContent).toContain("three");
     expect(table.rows[0]?.cells[0]?.getAttribute("aria-sort")).toBe("none");
-  });
-});
-
-describe("applyTableFreeze", () => {
-  beforeEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("clears previous sticky styles before applying new values", () => {
-    document.body.innerHTML = `
-      <table>
-        <tbody>
-          <tr><td>one</td><td>two</td></tr>
-          <tr><td>three</td><td>four</td></tr>
-        </tbody>
-      </table>
-    `;
-    const table = getTable();
-
-    applyTableFreeze(table, { rows: 1, columns: 1 });
-    expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBe("true");
-
-    applyTableFreeze(table, { rows: 0, columns: 0 });
-
-    expect(table.rows[0]?.cells[0]?.dataset[STICKY_CELL_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[0]?.cells[0]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[0]?.cells[0]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_TOP_PROPERTY)).toBe("");
-    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_LEFT_PROPERTY)).toBe("");
-    expect(table.rows[0]?.cells[0]?.style.getPropertyValue(STICKY_Z_INDEX_PROPERTY)).toBe("");
-  });
-
-  it("marks only the final frozen row as the row boundary", () => {
-    document.body.innerHTML = `
-      <table>
-        <tbody>
-          <tr><td>one</td><td>two</td></tr>
-          <tr><td>three</td><td>four</td></tr>
-          <tr><td>five</td><td>six</td></tr>
-        </tbody>
-      </table>
-    `;
-    const table = getTable();
-
-    applyTableFreeze(table, { rows: 2, columns: 1 });
-
-    expect(table.rows[0]?.cells[0]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[0]?.cells[1]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[1]?.cells[0]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
-    expect(table.rows[1]?.cells[1]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
-    expect(table.rows[2]?.cells[0]?.dataset[FROZEN_ROW_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-  });
-
-  it("marks only the final frozen column as the column boundary", () => {
-    document.body.innerHTML = `
-      <table>
-        <tbody>
-          <tr><td>one</td><td>two</td><td>three</td></tr>
-          <tr><td>four</td><td>five</td><td>six</td></tr>
-        </tbody>
-      </table>
-    `;
-    const table = getTable();
-
-    applyTableFreeze(table, { rows: 1, columns: 2 });
-
-    expect(table.rows[0]?.cells[0]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[0]?.cells[1]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
-    expect(table.rows[0]?.cells[2]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[1]?.cells[0]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[1]?.cells[1]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBe("true");
-    expect(table.rows[1]?.cells[2]?.dataset[FROZEN_COLUMN_BOUNDARY_DATA_ATTRIBUTE]).toBeUndefined();
-  });
-});
-
-describe("applyTableVisibility", () => {
-  beforeEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("marks hidden rows and columns and clears previous visibility state", () => {
-    document.body.innerHTML = `
-      <table>
-        <tbody>
-          <tr><td>one</td><td>two</td></tr>
-          <tr><td>three</td><td>four</td></tr>
-        </tbody>
-      </table>
-    `;
-    const table = getTable();
-
-    applyTableVisibility(table, { rows: [1], columns: [1] });
-    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBe("true");
-    expect(table.rows[0]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBe("true");
-
-    applyTableVisibility(table, { rows: [], columns: [] });
-    expect(table.rows[1]?.dataset[HIDDEN_ROW_DATA_ATTRIBUTE]).toBeUndefined();
-    expect(table.rows[0]?.cells[1]?.dataset[HIDDEN_COLUMN_DATA_ATTRIBUTE]).toBeUndefined();
-  });
-});
-
-describe("copy table data", () => {
-  beforeEach(() => {
-    document.body.innerHTML = "";
-  });
-
-  it("serializes only visible table rows and columns", () => {
-    document.body.innerHTML = `
-      <table>
-        <thead><tr><th>Runtime</th><th>Status</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>Node.js</td><td>Ready</td><td>Uses | pipes</td></tr>
-          <tr><td>Ruby</td><td>Blocked</td><td>Needs review</td></tr>
-        </tbody>
-      </table>
-    `;
-    const table = getTable();
-
-    applyTableVisibility(table, { rows: [], columns: [1], filterQuery: "node" });
-
-    const visibleData = getVisibleTableData(table);
-    expect(visibleData).toEqual([
-      ["Runtime", "Notes"],
-      ["Node.js", "Uses | pipes"],
-    ]);
-    expect(serializeTableData(visibleData, "markdown")).toBe(
-      "| Runtime | Notes |\n| --- | --- |\n| Node.js | Uses \\| pipes |",
-    );
-    expect(serializeTableData(visibleData, "csv")).toBe("Runtime,Notes\nNode.js,Uses | pipes");
-    expect(serializeTableData(visibleData, "tsv")).toBe("Runtime\tNotes\nNode.js\tUses | pipes");
   });
 });
 

@@ -1,34 +1,34 @@
-import { createTableSession, type TableSession, type TableSessionOptions } from "./session";
+import { mountTableRuntime, type TableRuntime, type TableRuntimeOptions } from "./mount";
 
-const tableSessions = new WeakMap<HTMLTableElement, TableSession>();
+const tableRuntimes = new WeakMap<HTMLTableElement, TableRuntime>();
 
-export function mountTableSession(
+export function mountManagedTable(
   table: HTMLTableElement,
-  options: TableSessionOptions = {},
-): TableSession {
-  const existingSession = tableSessions.get(table);
+  options: TableRuntimeOptions = {},
+): TableRuntime {
+  const existingRuntime = tableRuntimes.get(table);
 
-  if (existingSession) {
-    return existingSession;
+  if (existingRuntime) {
+    return existingRuntime;
   }
 
-  const session = createTableSession(table, options);
-  tableSessions.set(table, session);
-  return session;
+  const runtime = mountTableRuntime(table, options);
+  tableRuntimes.set(table, runtime);
+  return runtime;
 }
 
-export function destroyTableSession(table: HTMLTableElement): void {
-  const session = tableSessions.get(table);
+export function destroyManagedTable(table: HTMLTableElement): void {
+  const runtime = tableRuntimes.get(table);
 
-  if (!session) {
+  if (!runtime) {
     return;
   }
 
-  session.destroy();
-  tableSessions.delete(table);
+  runtime.destroy();
+  tableRuntimes.delete(table);
 }
 
-export function destroyDetachedTableSessions(root: Element): void {
+export function destroyDetachedTableRuntimes(root: Element): void {
   const tables = Array.from(root.querySelectorAll<HTMLTableElement>("table"));
 
   if (root instanceof HTMLTableElement) {
@@ -37,7 +37,7 @@ export function destroyDetachedTableSessions(root: Element): void {
 
   for (const table of tables) {
     if (!table.isConnected) {
-      destroyTableSession(table);
+      destroyManagedTable(table);
     }
   }
 }

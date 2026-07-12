@@ -1,6 +1,6 @@
 import { TABLE_WRAPPER_CLASS } from "./constants";
 import { readHeadingFreezeRule, saveHeadingFreezeRule } from "./freeze-rule-storage";
-import { destroyDetachedTableSessions, mountTableSession } from "./lifecycle";
+import { destroyDetachedTableRuntimes, mountManagedTable } from "./lifecycle";
 
 export {
   TABLE_COLUMN_RESIZE_HANDLE_CLASS,
@@ -79,7 +79,7 @@ export function wrapTable(table: HTMLTableElement): void {
     wrapper.appendChild(table);
   }
 
-  const session = mountTableSession(table, {
+  const runtime = mountManagedTable(table, {
     defaultValuesPromise:
       headingText && repository ? readHeadingFreezeRule(repository, headingText) : null,
     headingText,
@@ -88,7 +88,7 @@ export function wrapTable(table: HTMLTableElement): void {
         ? (values) => saveHeadingFreezeRule(repository, headingText, values)
         : undefined,
   });
-  wrapper.insertBefore(session.controls, table);
+  wrapper.insertBefore(runtime.controls, table);
 }
 
 export function enhanceTables(root: ParentNode = document): void {
@@ -119,7 +119,7 @@ export function startTableEnhancer(): MutationObserver {
 
       for (const node of mutation.removedNodes) {
         if (node instanceof Element) {
-          destroyDetachedTableSessions(node);
+          destroyDetachedTableRuntimes(node);
         }
       }
     }

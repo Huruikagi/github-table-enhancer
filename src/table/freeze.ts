@@ -10,12 +10,8 @@ import {
   TABLE_WRAPPER_CLASS,
 } from "./constants";
 import { getStickyColumnWidth } from "./resize";
+import type { FreezeOptions } from "./state";
 import { clampInteger } from "./utils";
-
-export type FreezeOptions = {
-  rows: number;
-  columns: number;
-};
 
 type StickyCellLayout = {
   cell: HTMLTableCellElement;

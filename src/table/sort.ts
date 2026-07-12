@@ -3,13 +3,7 @@ import {
   SORT_COLUMN_INDEX_DATA_ATTRIBUTE,
   TABLE_SORT_BUTTON_CLASS,
 } from "./constants";
-
-export type SortDirection = "ascending" | "descending";
-
-export type TableSort = {
-  column: number;
-  direction: SortDirection;
-} | null;
+import type { TableSort } from "./state";
 
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
 

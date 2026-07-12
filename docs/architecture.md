@@ -1,23 +1,25 @@
 # Architecture
 
-GitHub Table Enhancer runs as one content script, but each enhanced table is managed as an
-independent session. The architecture keeps GitHub's original table DOM in place and projects a
-single table view state onto it.
+GitHub Table Enhancer runs as one content script, but each enhanced table has an independent pure
+controller and browser runtime. The architecture keeps GitHub's original table DOM in place and
+projects a single table view state onto it.
 
 ## Runtime flow
 
 ```text
 content.ts
   -> enhancer.ts discovers GitHub Markdown tables
-  -> lifecycle.ts mounts one TableSession per table
-  -> controls.tsx dispatches user actions
-  -> state.ts reduces actions into TableViewState
-  -> reconcile.ts projects state onto the table DOM
+  -> lifecycle.ts owns one browser runtime per table
+  -> mount.ts wires DOM events, controls, and external adapters
+  -> controls.tsx dispatches actions to TableController
+  -> controller.ts and state.ts produce TableViewState
+  -> mount.ts invokes reconcile.ts to project state onto the DOM
 ```
 
-`TableSession` is the application boundary for one table. It owns the persistent view state,
-installs table-level interactions, exposes clipboard and saved-default operations to the controls,
-and releases those resources when GitHub removes the table from the page.
+`TableController` is independent of Preact, browser APIs, and table DOM. `mount.ts` is the
+composition boundary: it installs table interactions, subscribes DOM reconciliation to controller
+changes, passes external operation callbacks to the controls, and releases those resources when
+GitHub removes the table from the page.
 
 ## State ownership
 
@@ -31,8 +33,8 @@ and releases those resources when GitHub removes the table from the page.
 - fitted or manually resized column widths
 
 Short-lived toolbar presentation state, such as the open popup, Focus mode, and success messages,
-stays inside the Preact controls. Controls dispatch `TableViewAction` values instead of directly
-mutating table layout.
+stays inside the Preact controls. Controls depend on `TableController` for persistent state and
+receive browser operations as callbacks; they do not directly mutate table layout.
 
 ## DOM reconciliation
 
@@ -50,21 +52,25 @@ other's mutation function.
 
 ## Lifecycle
 
-`lifecycle.ts` stores sessions in a `WeakMap<HTMLTableElement, TableSession>`. The page-level
-`MutationObserver` mounts newly added tables and destroys sessions for detached tables. Destroying
-a session unmounts Preact, removes document and pointer listeners, resets injected table controls,
-and clears Focus mode page state.
+`lifecycle.ts` stores browser runtimes in a `WeakMap<HTMLTableElement, TableRuntime>`. The page-level
+`MutationObserver` mounts newly added tables and destroys runtimes for detached tables. Destroying
+a runtime unmounts Preact, removes document and pointer listeners, resets injected table controls,
+and clears Focus mode page state. A previously destroyed table can be mounted again without
+duplicating injected controls.
 
 ## External operations
 
-Clipboard writes and saved Freeze defaults are exposed through the session boundary. The default
+Clipboard writes and saved Freeze defaults are injected at the mount boundary. The default
 adapters use `navigator.clipboard` and `chrome.storage.local`; tests can supply replacements without
 changing controls or state transitions.
 
 ## Testing boundaries
 
 - `state.test.ts` covers pure state transitions.
-- `lifecycle.test.ts` covers mount and destroy cleanup.
+- `controller.test.ts` covers controller policies and notifications without a DOM.
+- `enhancer-discovery.test.ts` covers GitHub URL and Markdown discovery rules.
+- `projections.test.ts` covers focused DOM projections.
+- `lifecycle.test.ts` covers mount, destroy, cleanup, and remount.
 - `table-enhancer.test.ts` remains the DOM integration and behavior regression suite.
 - `e2e/table-enhancer.spec.ts` verifies the built extension in Chromium.
 

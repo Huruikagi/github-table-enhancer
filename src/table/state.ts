@@ -1,6 +1,16 @@
-import type { FreezeOptions } from "./freeze";
-import type { TableSort } from "./sort";
 import { addUniqueSortedIndex, clampInteger } from "./utils";
+
+export type FreezeOptions = {
+  rows: number;
+  columns: number;
+};
+
+export type SortDirection = "ascending" | "descending";
+
+export type TableSort = {
+  column: number;
+  direction: SortDirection;
+} | null;
 
 export type TableViewState = {
   freeze: FreezeOptions;

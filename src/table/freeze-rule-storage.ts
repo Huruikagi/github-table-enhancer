@@ -1,4 +1,4 @@
-import type { FreezeOptions } from "./freeze";
+import type { FreezeOptions } from "./state";
 
 const FREEZE_RULE_SETTINGS_STORAGE_KEY = "githubTableEnhancerFreezeRuleSettings";
 

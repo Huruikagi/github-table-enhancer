@@ -4,19 +4,31 @@ import { useId, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { TABLE_CONTROLS_CLASS, TABLE_CONTROLS_TAG, TABLE_CONTROLS_TOGGLE_CLASS } from "./constants";
 import { ControlIcon } from "./control-icons";
 import { CopyPanel, FilterPanel, FreezePanel, type SaveDefaultStatus } from "./control-panels";
+import type { TableController } from "./controller";
 import type { CopyFormat } from "./copy";
 import { useTableFocusMode } from "./focus-mode";
-import type { FreezeOptions } from "./freeze";
-import type { TableSession } from "./session";
+import type { FreezeOptions } from "./state";
 import { getFilterRegularExpressionError } from "./visibility";
 
 type TableControlsProps = {
-  session: TableSession;
+  controller: TableController;
+  headingText?: string | null;
+  onCopy: (format: CopyFormat) => Promise<void>;
+  onFitColumns: () => void;
+  onSaveDefault?: () => Promise<void>;
+  table: HTMLTableElement;
 };
 
 type OpenPanel = "copy" | "filter" | "freeze" | null;
 
-function TableControls({ session }: TableControlsProps): VNode {
+function TableControls({
+  controller,
+  headingText,
+  onCopy,
+  onFitColumns,
+  onSaveDefault,
+  table,
+}: TableControlsProps): VNode {
   const inputIdPrefix = useId();
   const copyToggleRef = useRef<HTMLButtonElement>(null);
   const copyFirstButtonRef = useRef<HTMLButtonElement>(null);
@@ -29,7 +41,7 @@ function TableControls({ session }: TableControlsProps): VNode {
   const filterInputRef = useRef<HTMLInputElement>(null);
   const [openPanel, setOpenPanel] = useState<OpenPanel>(null);
   const [isFocusMode, setIsFocusMode] = useState(false);
-  const [viewState, setViewState] = useState(session.getState());
+  const [viewState, setViewState] = useState(controller.getState());
   const [copyStatus, setCopyStatus] = useState<CopyFormat | "failed" | "idle">("idle");
   const [saveDefaultStatus, setSaveDefaultStatus] = useState<SaveDefaultStatus>("idle");
   const { filterQuery, filterUsesRegularExpression, freeze, hiddenColumns, hiddenRows, isWrapped } =
@@ -38,8 +50,8 @@ function TableControls({ session }: TableControlsProps): VNode {
   const anchorPrefix = `--gte-${inputIdPrefix.replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   const applyValues = (nextValues: FreezeOptions): FreezeOptions => {
-    session.dispatch({ type: "freezeChanged", value: nextValues });
-    return session.getState().freeze;
+    controller.dispatch({ type: "freezeChanged", value: nextValues });
+    return controller.getState().freeze;
   };
 
   const updateValues = (nextValues: FreezeOptions): FreezeOptions => {
@@ -49,25 +61,25 @@ function TableControls({ session }: TableControlsProps): VNode {
   };
 
   const showHidden = (): void => {
-    session.dispatch({ type: "hiddenShown" });
+    controller.dispatch({ type: "hiddenShown" });
   };
 
   const fitTableView = (): void => {
-    session.fitColumns();
+    onFitColumns();
   };
 
   const resetTableView = (): void => {
     setSaveDefaultStatus("idle");
-    session.dispatch({ type: "reset" });
+    controller.dispatch({ type: "reset" });
   };
 
   const toggleWrap = (): void => {
-    session.dispatch({ type: "wrapChanged", value: !isWrapped });
+    controller.dispatch({ type: "wrapChanged", value: !isWrapped });
   };
 
   const copyTable = async (format: CopyFormat): Promise<void> => {
     try {
-      await session.copy(format);
+      await onCopy(format);
       setCopyStatus(format);
       window.setTimeout(() => {
         setCopyStatus((currentStatus) => (currentStatus === format ? "idle" : currentStatus));
@@ -78,14 +90,14 @@ function TableControls({ session }: TableControlsProps): VNode {
   };
 
   const saveDefault = async (): Promise<void> => {
-    if (!session.saveDefault) {
+    if (!onSaveDefault) {
       return;
     }
 
     setSaveDefaultStatus("saving");
 
     try {
-      await session.saveDefault();
+      await onSaveDefault();
       setSaveDefaultStatus("saved");
       window.setTimeout(() => {
         setSaveDefaultStatus((currentStatus) =>
@@ -97,7 +109,7 @@ function TableControls({ session }: TableControlsProps): VNode {
     }
   };
 
-  useLayoutEffect(() => session.subscribe(setViewState), [session]);
+  useLayoutEffect(() => controller.subscribe((state) => setViewState(state)), [controller]);
 
   useLayoutEffect(() => {
     if (openPanel === "copy") {
@@ -149,7 +161,7 @@ function TableControls({ session }: TableControlsProps): VNode {
     };
   }, [openPanel]);
 
-  useTableFocusMode(session.table, isFocusMode, setIsFocusMode, focusToggleRef);
+  useTableFocusMode(table, isFocusMode, setIsFocusMode, focusToggleRef);
 
   const closeFreezePanel = (): void => {
     setOpenPanel(null);
@@ -295,9 +307,11 @@ function TableControls({ session }: TableControlsProps): VNode {
           filterUsesRegularExpression={filterUsesRegularExpression}
           inputIdPrefix={inputIdPrefix}
           onEscape={closeFilterPanel}
-          onFilterQueryChange={(value) => session.dispatch({ type: "filterQueryChanged", value })}
+          onFilterQueryChange={(value) =>
+            controller.dispatch({ type: "filterQueryChanged", value })
+          }
           onFilterUsesRegularExpressionChange={(value) =>
-            session.dispatch({ type: "filterRegularExpressionChanged", value })
+            controller.dispatch({ type: "filterRegularExpressionChanged", value })
           }
           panelRef={panelRef}
           positionAnchor={`${anchorPrefix}-filter`}
@@ -306,11 +320,11 @@ function TableControls({ session }: TableControlsProps): VNode {
       {openPanel === "freeze" && (
         <FreezePanel
           columnsInputRef={columnsInputRef}
-          headingText={session.headingText}
+          headingText={headingText}
           inputIdPrefix={inputIdPrefix}
-          limits={session.limits}
+          limits={controller.limits}
           onClose={closeFreezePanel}
-          onSaveDefault={session.saveDefault ? saveDefault : undefined}
+          onSaveDefault={onSaveDefault ? saveDefault : undefined}
           onUpdateValues={updateValues}
           panelRef={panelRef}
           positionAnchor={`${anchorPrefix}-freeze`}
@@ -323,10 +337,10 @@ function TableControls({ session }: TableControlsProps): VNode {
   );
 }
 
-export function createTableControls(session: TableSession): HTMLElement {
+export function createTableControls(props: TableControlsProps): HTMLElement {
   const controls = document.createElement(TABLE_CONTROLS_TAG);
   controls.classList.add(TABLE_CONTROLS_CLASS);
-  render(<TableControls session={session} />, controls);
+  render(<TableControls {...props} />, controls);
 
   return controls;
 }
