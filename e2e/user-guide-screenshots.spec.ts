@@ -47,7 +47,64 @@ const guideFixture = `<!doctype html>
 </html>`;
 
 async function screenshot(page: Page, name: string): Promise<void> {
-  await page.screenshot({ path: path.join(screenshotDirectory, name), fullPage: true });
+  const screenshotPath = path.join(screenshotDirectory, name);
+  const candidate = await page.screenshot({ fullPage: true });
+
+  let existing: Buffer;
+  try {
+    existing = await fs.readFile(screenshotPath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw error;
+    }
+
+    await fs.writeFile(screenshotPath, candidate);
+    return;
+  }
+
+  if (existing.equals(candidate)) {
+    return;
+  }
+
+  const hasVisualDifference = await page.evaluate(
+    async ({ existingPng, candidatePng }) => {
+      const decodePng = async (png: string) => {
+        const image = new Image();
+        image.src = `data:image/png;base64,${png}`;
+        await image.decode();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const context = canvas.getContext("2d");
+        if (!context) {
+          throw new Error("Unable to create a canvas context for screenshot comparison.");
+        }
+
+        context.drawImage(image, 0, 0);
+        return context.getImageData(0, 0, image.width, image.height);
+      };
+
+      const [existing, candidate] = await Promise.all([
+        decodePng(existingPng),
+        decodePng(candidatePng),
+      ]);
+
+      if (existing.width !== candidate.width || existing.height !== candidate.height) {
+        return true;
+      }
+
+      return existing.data.some((value, index) => value !== candidate.data[index]);
+    },
+    {
+      existingPng: existing.toString("base64"),
+      candidatePng: candidate.toString("base64"),
+    },
+  );
+
+  if (hasVisualDifference) {
+    await fs.writeFile(screenshotPath, candidate);
+  }
 }
 
 test.beforeEach(async ({ page }) => {
