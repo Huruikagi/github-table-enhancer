@@ -13,12 +13,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup mise
-        uses: jdx/mise-action@v2
+        uses: jdx/mise-action@v4
         with:
           cache: true
 
@@ -62,7 +62,7 @@ jobs:
           } > release-notes.md
 
       - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: table-enhancer-for-github-v${{ steps.manifest.outputs.version }}
           path: release/table-enhancer-for-github-v${{ steps.manifest.outputs.version }}.zip
