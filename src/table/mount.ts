@@ -3,7 +3,6 @@
  * State transition rules remain in the controller and state modules.
  */
 import { createTableController, type TableController } from "./controller";
-import { createTableControls, destroyTableControls } from "./controls";
 import { type CopyFormat, copyVisibleTable } from "./features/copy";
 import {
   getHideControlClick,
@@ -24,6 +23,7 @@ import {
 } from "./features/sort";
 import { reconcileTable } from "./reconcile";
 import type { FreezeOptions } from "./state";
+import { createTableControls, destroyTableControls } from "./ui/controls";
 
 export type TableRuntimeOptions = {
   copy?: (table: HTMLTableElement, format: CopyFormat) => Promise<void>;

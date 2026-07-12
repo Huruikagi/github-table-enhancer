@@ -1,14 +1,18 @@
 import type { VNode } from "preact";
 import { render } from "preact";
 import { useId, useLayoutEffect, useRef, useState } from "preact/hooks";
-import { TABLE_CONTROLS_CLASS, TABLE_CONTROLS_TAG, TABLE_CONTROLS_TOGGLE_CLASS } from "./constants";
+import {
+  TABLE_CONTROLS_CLASS,
+  TABLE_CONTROLS_TAG,
+  TABLE_CONTROLS_TOGGLE_CLASS,
+} from "../constants";
+import type { TableController } from "../controller";
+import type { CopyFormat } from "../features/copy";
+import { useTableFocusMode } from "../features/focus-mode";
+import { getFilterRegularExpressionError } from "../features/visibility";
+import type { FreezeOptions } from "../state";
 import { ControlIcon } from "./control-icons";
 import { CopyPanel, FilterPanel, FreezePanel, type SaveDefaultStatus } from "./control-panels";
-import type { TableController } from "./controller";
-import type { CopyFormat } from "./features/copy";
-import { useTableFocusMode } from "./features/focus-mode";
-import { getFilterRegularExpressionError } from "./features/visibility";
-import type { FreezeOptions } from "./state";
 
 type TableControlsProps = {
   controller: TableController;

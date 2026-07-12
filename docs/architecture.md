@@ -11,7 +11,7 @@ content.ts
   -> enhancer.ts discovers GitHub Markdown tables
   -> lifecycle.ts owns one browser runtime per table
   -> mount.ts wires DOM events, controls, and external adapters
-  -> controls.tsx dispatches actions to TableController
+  -> ui/controls.tsx dispatches actions to TableController
   -> controller.ts and state.ts produce TableViewState
   -> mount.ts invokes reconcile.ts to project state onto the DOM
 ```
@@ -24,8 +24,8 @@ GitHub removes the table from the page.
 ## Module layout
 
 The files directly under `src/table/` define application boundaries such as state, controller,
-mounting, reconciliation, lifecycle, discovery, storage, and controls. Individual table behaviors
-live under `src/table/features/`:
+mounting, reconciliation, lifecycle, discovery, and storage. Individual table behaviors live under
+`src/table/features/`:
 
 - `copy.ts`
 - `focus-mode.ts`
@@ -37,6 +37,16 @@ live under `src/table/features/`:
 
 Feature modules may use shared state types, constants, and read-only helpers from another feature.
 Cross-feature DOM mutation order remains the responsibility of `reconcile.ts`.
+
+Preact toolbar presentation lives under `src/table/ui/`:
+
+- `controls.tsx`
+- `control-panels.tsx`
+- `control-icons.tsx`
+
+UI modules may dispatch controller actions and call browser-operation callbacks supplied by
+`mount.ts`; they must not own persistent table view state or directly orchestrate feature DOM
+mutations.
 
 ## State ownership
 
