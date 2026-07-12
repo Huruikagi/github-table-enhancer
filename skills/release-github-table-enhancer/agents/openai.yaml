@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Table Enhancer"
+  short_description: "Ship this extension with verified GitHub release artifacts"
+  default_prompt: "Use $release-github-table-enhancer to release the next version of this extension."
