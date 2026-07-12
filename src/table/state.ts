@@ -1,3 +1,7 @@
+/**
+ * Defines persistent per-table view state and its actions.
+ * This module contains no DOM, browser API, or toolbar presentation behavior.
+ */
 import { addUniqueSortedIndex, clampInteger } from "./utils";
 
 export type FreezeOptions = {

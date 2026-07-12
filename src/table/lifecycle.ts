@@ -1,3 +1,7 @@
+/**
+ * Registers one browser runtime per table and destroys runtimes for detached tables.
+ * Feature behavior and DOM projection are delegated to the mounted runtime.
+ */
 import { mountTableRuntime, type TableRuntime, type TableRuntimeOptions } from "./mount";
 
 const tableRuntimes = new WeakMap<HTMLTableElement, TableRuntime>();

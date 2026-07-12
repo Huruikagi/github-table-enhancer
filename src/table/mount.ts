@@ -1,3 +1,7 @@
+/**
+ * Composes one table's controller, DOM interactions, Preact controls, and external adapters.
+ * State transition rules remain in the controller and state modules.
+ */
 import { createTableController, type TableController } from "./controller";
 import { createTableControls, destroyTableControls } from "./controls";
 import { type CopyFormat, copyVisibleTable } from "./copy";

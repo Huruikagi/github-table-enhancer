@@ -1,3 +1,7 @@
+/**
+ * Owns DOM-independent table state transitions and subscriber notifications.
+ * Browser effects and DOM projection belong to the mount runtime.
+ */
 import {
   createInitialTableViewState,
   type FreezeOptions,

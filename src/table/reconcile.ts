@@ -1,3 +1,7 @@
+/**
+ * Projects table state changes onto the DOM in the required cross-feature order.
+ * This module coordinates projections but does not own state or browser event listeners.
+ */
 import { WRAPPED_COLUMNS_DATA_ATTRIBUTE } from "./constants";
 import { applyTableFreeze } from "./freeze";
 import { applyTableColumnWidths } from "./resize";
