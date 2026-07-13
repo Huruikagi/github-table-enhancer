@@ -1299,4 +1299,32 @@ describe("enhanceTables", () => {
 
     expect(document.querySelectorAll(`.${TABLE_WRAPPER_CLASS}`)).toHaveLength(1);
   });
+
+  it("does not miss a table added between the initial scan and observer startup", () => {
+    renderMarkdownTables("");
+    const RealMutationObserver = globalThis.MutationObserver;
+
+    class DelayedMutationObserver extends RealMutationObserver {
+      constructor(callback: MutationCallback) {
+        super(callback);
+        document
+          .querySelector(".markdown-body")
+          ?.insertAdjacentHTML(
+            "beforeend",
+            "<table><tbody><tr><td>table added during startup</td></tr></tbody></table>",
+          );
+      }
+    }
+
+    globalThis.MutationObserver = DelayedMutationObserver;
+
+    try {
+      const observer = startTableEnhancer();
+      observer.disconnect();
+
+      expect(document.querySelectorAll(`.${TABLE_WRAPPER_CLASS}`)).toHaveLength(1);
+    } finally {
+      globalThis.MutationObserver = RealMutationObserver;
+    }
+  });
 });

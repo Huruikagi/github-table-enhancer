@@ -107,8 +107,6 @@ export function enhanceTables(root: ParentNode = document): void {
 }
 
 export function startTableEnhancer(): MutationObserver {
-  enhanceTables();
-
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
@@ -129,6 +127,8 @@ export function startTableEnhancer(): MutationObserver {
     childList: true,
     subtree: true,
   });
+
+  enhanceTables();
 
   return observer;
 }
