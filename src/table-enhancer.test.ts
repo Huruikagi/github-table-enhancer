@@ -804,7 +804,7 @@ describe("wrapTable", () => {
     setFilterInput("missing");
 
     expect(document.querySelector(".github-table-enhancer-filter-summary")?.textContent).toBe(
-      "0 of 2 rows",
+      "0 matches · 0 shown · 2 total",
     );
     expect(document.querySelector("[role='status']")?.textContent).toContain(
       "No rows match this filter.",
@@ -814,7 +814,7 @@ describe("wrapTable", () => {
     clickButton("Hide row 2");
 
     expect(document.querySelector(".github-table-enhancer-filter-summary")?.textContent).toBe(
-      "0 shown · 1 matches · 2 total",
+      "1 matches · 0 shown · 2 total",
     );
     expect(document.querySelector("[role='status']")?.textContent).toContain(
       "1 matching row is hidden.",

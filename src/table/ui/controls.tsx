@@ -58,9 +58,7 @@ function TableControls({
     filterUsesRegularExpression,
   });
   const filterResultSummary = filterResult
-    ? filterResult.visibleRows === filterResult.matchingRows
-      ? `${filterResult.matchingRows} of ${filterResult.totalRows} rows`
-      : `${filterResult.visibleRows} shown · ${filterResult.matchingRows} matches · ${filterResult.totalRows} total`
+    ? `${filterResult.matchingRows} matches · ${filterResult.visibleRows} shown · ${filterResult.totalRows} total`
     : null;
   const anchorPrefix = `--gte-${inputIdPrefix.replace(/[^a-zA-Z0-9_-]/g, "")}`;
 

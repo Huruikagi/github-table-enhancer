@@ -44,7 +44,7 @@ Freeze defaults saved by older versions were keyed only by heading text. They ar
 
 ## Filter a table without changing it
 
-Choose the filter icon and type a word or phrase. Matching is case-insensitive and happens immediately. Select the **Use regular expression** (`.*`) button to interpret the input as a regular expression; invalid expressions leave all rows visible and show an error. The header remains visible, and **Clear filter** restores all rows that were not manually hidden.
+Choose the filter icon and type a word or phrase. Matching is case-insensitive and happens immediately. Select the **Use regular expression** (`.*`) button to interpret the input as a regular expression; invalid expressions leave all rows visible and show an error. The header remains visible, the panel summarizes matching, shown, and total row counts, and **Clear filter** restores all rows that were not manually hidden.
 
 ![The filter panel displaying only rows that match ready.]({{ site.baseurl }}/store-assets/screenshots/user-guide-filter.png)
 

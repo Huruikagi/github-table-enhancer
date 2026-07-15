@@ -169,7 +169,7 @@ test("explains why a filter leaves no visible rows", async ({ page }) => {
   await filterInput.fill("does-not-exist");
   await expect(wrapper.getByRole("status")).toContainText("No rows match this filter.");
   await expect(wrapper.locator(".github-table-enhancer-filter-summary")).toContainText(
-    "0 of 4 rows",
+    "0 matches · 0 shown · 4 total",
   );
 
   await filterInput.fill("rebuilt content script is active");
