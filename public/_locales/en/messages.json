@@ -1,0 +1,80 @@
+{
+  "extensionName": { "message": "Table Enhancer for GitHub" },
+  "extensionDescription": {
+    "message": "An unofficial extension that makes wide tables easier to read in GitHub Markdown file previews."
+  },
+  "clearFilter": { "message": "Clear filter" },
+  "close": { "message": "Close" },
+  "closeFocusMode": { "message": "Close Focus mode (Esc)" },
+  "columns": { "message": "Columns" },
+  "copiedFormat": {
+    "message": "Copied $FORMAT$",
+    "placeholders": { "format": { "content": "$1" } }
+  },
+  "copyAs": { "message": "Copy as" },
+  "copyFailed": { "message": "Copy failed" },
+  "expand": { "message": "Expand" },
+  "expandTableView": { "message": "Expand table view" },
+  "failed": { "message": "Failed" },
+  "filter": { "message": "Filter" },
+  "filterRows": { "message": "Filter rows" },
+  "filterRowsPlaceholder": { "message": "Filter rows..." },
+  "filterSummaryAllVisible": {
+    "message": "$MATCHING$ of $TOTAL$ rows",
+    "placeholders": { "matching": { "content": "$1" }, "total": { "content": "$2" } }
+  },
+  "filterSummarySomeVisible": {
+    "message": "$VISIBLE$ shown · $MATCHING$ matches · $TOTAL$ total",
+    "placeholders": {
+      "visible": { "content": "$1" },
+      "matching": { "content": "$2" },
+      "total": { "content": "$3" }
+    }
+  },
+  "fit": { "message": "Fit" },
+  "fitColumns": { "message": "Fit columns" },
+  "focusMode": { "message": "Focus mode" },
+  "focusModeInstructionAfter": { "message": "to return" },
+  "focusModeInstructionBefore": { "message": "Press" },
+  "freeze": { "message": "Freeze" },
+  "frozenColumns": { "message": "Frozen columns" },
+  "frozenRows": { "message": "Frozen rows" },
+  "hideColumn": {
+    "message": "Hide column $NUMBER$",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "hideRow": { "message": "Hide row $NUMBER$", "placeholders": { "number": { "content": "$1" } } },
+  "invalidRegularExpression": { "message": "Invalid regular expression" },
+  "matchingRowHidden": {
+    "message": "$COUNT$ matching row is hidden.",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "matchingRowsHidden": {
+    "message": "$COUNT$ matching rows are hidden.",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "noRowsMatchFilter": { "message": "No rows match this filter." },
+  "reset": { "message": "Reset" },
+  "resetTableView": { "message": "Reset table view" },
+  "resizeColumn": {
+    "message": "Resize column $NUMBER$",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "rows": { "message": "Rows" },
+  "saveDefault": { "message": "Save default" },
+  "saved": { "message": "Saved" },
+  "saving": { "message": "Saving..." },
+  "showHidden": { "message": "Show hidden" },
+  "showHiddenRowsAndColumns": { "message": "Show hidden rows and columns" },
+  "sortByColumn": {
+    "message": "Sort by column $NUMBER$",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "sortByColumnHint": {
+    "message": "$LABEL$ (ascending, descending, original order)",
+    "placeholders": { "label": { "content": "$1" } }
+  },
+  "useRegularExpression": { "message": "Use regular expression" },
+  "wrap": { "message": "Wrap" },
+  "wrapColumns": { "message": "Wrap columns" }
+}

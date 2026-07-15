@@ -1,3 +1,4 @@
+import { translate } from "../../i18n";
 import {
   FILTERED_ROW_DATA_ATTRIBUTE,
   HIDDEN_COLUMN_DATA_ATTRIBUTE,
@@ -27,7 +28,7 @@ export function getFilterRegularExpressionError(filterQuery: string): string | n
     new RegExp(filterQuery, "i");
     return null;
   } catch {
-    return "Invalid regular expression";
+    return translate("invalidRegularExpression");
   }
 }
 

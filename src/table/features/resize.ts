@@ -1,3 +1,4 @@
+import { translate } from "../../i18n";
 import {
   COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE,
   FILTERED_ROW_DATA_ATTRIBUTE,
@@ -43,7 +44,7 @@ function createColumnResizeHandle(index: number): HTMLSpanElement {
   handle.ariaHidden = "true";
   handle.className = TABLE_COLUMN_RESIZE_HANDLE_CLASS;
   handle.dataset[COLUMN_RESIZE_INDEX_DATA_ATTRIBUTE] = String(index);
-  handle.title = `Resize column ${index + 1}`;
+  handle.title = translate("resizeColumn", [index + 1]);
 
   return handle;
 }

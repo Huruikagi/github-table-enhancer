@@ -1,6 +1,7 @@
 import type { VNode } from "preact";
 import { render } from "preact";
 import { useId, useLayoutEffect, useRef, useState } from "preact/hooks";
+import { translate } from "../../i18n";
 import {
   TABLE_CONTROLS_CLASS,
   TABLE_CONTROLS_TAG,
@@ -59,8 +60,12 @@ function TableControls({
   });
   const filterResultSummary = filterResult
     ? filterResult.visibleRows === filterResult.matchingRows
-      ? `${filterResult.matchingRows} of ${filterResult.totalRows} rows`
-      : `${filterResult.visibleRows} shown · ${filterResult.matchingRows} matches · ${filterResult.totalRows} total`
+      ? translate("filterSummaryAllVisible", [filterResult.matchingRows, filterResult.totalRows])
+      : translate("filterSummarySomeVisible", [
+          filterResult.visibleRows,
+          filterResult.matchingRows,
+          filterResult.totalRows,
+        ])
     : null;
   const anchorPrefix = `--gte-${inputIdPrefix.replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
@@ -213,10 +218,10 @@ function TableControls({
     <>
       {isFocusMode && (
         <div aria-live="polite" className="github-table-enhancer-focus-mode-status">
-          <strong>Focus mode</strong>
-          <span>Press</span>
+          <strong>{translate("focusMode")}</strong>
+          <span>{translate("focusModeInstructionBefore")}</span>
           <kbd>Esc</kbd>
-          <span>to return</span>
+          <span>{translate("focusModeInstructionAfter")}</span>
         </div>
       )}
       <button
@@ -227,16 +232,16 @@ function TableControls({
         style={{ anchorName: `${anchorPrefix}-freeze` }}
         type="button"
       >
-        Freeze
+        {translate("freeze")}
       </button>
       <button
         aria-expanded={openPanel === "filter"}
-        aria-label="Filter"
+        aria-label={translate("filter")}
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleFilterPanel}
         ref={filterToggleRef}
         style={{ anchorName: `${anchorPrefix}-filter` }}
-        title="Filter rows"
+        title={translate("filterRows")}
         type="button"
       >
         <ControlIcon kind="filter" />
@@ -249,54 +254,54 @@ function TableControls({
         style={{ anchorName: `${anchorPrefix}-copy` }}
         type="button"
       >
-        Copy as
+        {translate("copyAs")}
       </button>
       <button
-        aria-label="Fit"
+        aria-label={translate("fit")}
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={fitTableView}
-        title="Fit columns"
+        title={translate("fitColumns")}
         type="button"
       >
         <ControlIcon kind="fit" />
       </button>
       <button
-        aria-label="Wrap"
+        aria-label={translate("wrap")}
         aria-pressed={isWrapped}
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleWrap}
-        title="Wrap columns"
+        title={translate("wrapColumns")}
         type="button"
       >
         <ControlIcon kind="wrap" />
       </button>
       {hiddenCount > 0 && (
         <button
-          aria-label="Show hidden"
+          aria-label={translate("showHidden")}
           className={TABLE_CONTROLS_TOGGLE_CLASS}
           onClick={showHidden}
-          title="Show hidden rows and columns"
+          title={translate("showHiddenRowsAndColumns")}
           type="button"
         >
           <ControlIcon kind="show" />
         </button>
       )}
       <button
-        aria-label="Reset table view"
+        aria-label={translate("resetTableView")}
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={resetTableView}
-        title="Reset table view"
+        title={translate("resetTableView")}
         type="button"
       >
         <ControlIcon kind="reset" />
       </button>
       <button
-        aria-label={isFocusMode ? "Close" : "Expand"}
+        aria-label={translate(isFocusMode ? "close" : "expand")}
         aria-pressed={isFocusMode}
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleFocusMode}
         ref={focusToggleRef}
-        title={isFocusMode ? "Close Focus mode (Esc)" : "Expand table view"}
+        title={translate(isFocusMode ? "closeFocusMode" : "expandTableView")}
         type="button"
       >
         <ControlIcon kind="expand" />
@@ -306,19 +311,22 @@ function TableControls({
         <div aria-live="polite" className="github-table-enhancer-filter-empty-state" role="status">
           <span>
             {filterResult.matchingRows === 0
-              ? "No rows match this filter."
-              : `${filterResult.matchingRows} matching ${filterResult.matchingRows === 1 ? "row is" : "rows are"} hidden.`}
+              ? translate("noRowsMatchFilter")
+              : translate(
+                  filterResult.matchingRows === 1 ? "matchingRowHidden" : "matchingRowsHidden",
+                  [filterResult.matchingRows],
+                )}
           </span>
           {filterResult.matchingRows > 0 && (
             <button onClick={showHidden} type="button">
-              Show hidden
+              {translate("showHidden")}
             </button>
           )}
           <button
             onClick={() => controller.dispatch({ type: "filterQueryChanged", value: "" })}
             type="button"
           >
-            Clear filter
+            {translate("clearFilter")}
           </button>
         </div>
       )}

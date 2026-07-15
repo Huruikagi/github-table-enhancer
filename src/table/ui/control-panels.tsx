@@ -1,4 +1,5 @@
 import type { Ref, RefObject, VNode } from "preact";
+import { translate } from "../../i18n";
 import { TABLE_CONTROLS_PANEL_CLASS } from "../constants";
 import type { CopyFormat } from "../features/copy";
 import type { FreezeOptions } from "../state";
@@ -137,7 +138,7 @@ export function FilterPanel({
   return (
     <div className={TABLE_CONTROLS_PANEL_CLASS} ref={panelRef} style={{ positionAnchor }}>
       <label htmlFor={`${inputIdPrefix}-filter`}>
-        Filter rows
+        {translate("filterRows")}
         <input
           aria-describedby={
             filterRegularExpressionError
@@ -147,7 +148,7 @@ export function FilterPanel({
                 : undefined
           }
           aria-invalid={filterRegularExpressionError ? "true" : undefined}
-          aria-label="Filter rows"
+          aria-label={translate("filterRows")}
           id={`${inputIdPrefix}-filter`}
           onInput={(event) => onFilterQueryChange(event.currentTarget.value)}
           onKeyDown={(event) => {
@@ -159,17 +160,17 @@ export function FilterPanel({
             event.stopPropagation();
             onEscape();
           }}
-          placeholder="Filter rows..."
+          placeholder={translate("filterRowsPlaceholder")}
           ref={filterInputRef}
           type="search"
           value={filterQuery}
         />
       </label>
       <button
-        aria-label="Use regular expression"
+        aria-label={translate("useRegularExpression")}
         aria-pressed={filterUsesRegularExpression}
         onClick={() => onFilterUsesRegularExpressionChange(!filterUsesRegularExpression)}
-        title="Use regular expression"
+        title={translate("useRegularExpression")}
         type="button"
       >
         .*
@@ -189,7 +190,7 @@ export function FilterPanel({
       )}
       {filterQuery.trim() && (
         <button onClick={() => onFilterQueryChange("")} type="button">
-          Clear filter
+          {translate("clearFilter")}
         </button>
       )}
     </div>
@@ -225,10 +226,12 @@ export function CopyPanel({
           ref={format === "markdown" ? firstButtonRef : undefined}
           type="button"
         >
-          {status === format ? `Copied ${COPY_FORMAT_LABELS[format]}` : COPY_FORMAT_LABELS[format]}
+          {status === format
+            ? translate("copiedFormat", [COPY_FORMAT_LABELS[format]])
+            : COPY_FORMAT_LABELS[format]}
         </button>
       ))}
-      {status === "failed" && <span>Copy failed</span>}
+      {status === "failed" && <span>{translate("copyFailed")}</span>}
     </div>
   );
 }
@@ -254,12 +257,12 @@ export function FreezePanel({
       style={{ positionAnchor }}
     >
       <label htmlFor={`${inputIdPrefix}-rows`}>
-        Rows
+        {translate("rows")}
         <FreezeNumberInput
           inputIdPrefix={inputIdPrefix}
           inputRef={rowsInputRef}
           kind="rows"
-          label="Frozen rows"
+          label={translate("frozenRows")}
           limits={limits}
           onChange={onUpdateValues}
           onEscape={onClose}
@@ -268,12 +271,12 @@ export function FreezePanel({
         />
       </label>
       <label htmlFor={`${inputIdPrefix}-columns`}>
-        Columns
+        {translate("columns")}
         <FreezeNumberInput
           inputIdPrefix={inputIdPrefix}
           inputRef={columnsInputRef}
           kind="columns"
-          label="Frozen columns"
+          label={translate("frozenColumns")}
           limits={limits}
           onChange={onUpdateValues}
           onEscape={onClose}
@@ -281,7 +284,7 @@ export function FreezePanel({
         />
       </label>
       <button onClick={() => onUpdateValues({ rows: 0, columns: 0 })} type="button">
-        Reset
+        {translate("reset")}
       </button>
       {headingText && onSaveDefault && (
         <button
@@ -290,10 +293,10 @@ export function FreezePanel({
           onClick={onSaveDefault}
           type="button"
         >
-          {saveDefaultStatus === "saving" && "Saving..."}
-          {saveDefaultStatus === "saved" && "Saved"}
-          {saveDefaultStatus === "failed" && "Failed"}
-          {saveDefaultStatus === "idle" && "Save default"}
+          {saveDefaultStatus === "saving" && translate("saving")}
+          {saveDefaultStatus === "saved" && translate("saved")}
+          {saveDefaultStatus === "failed" && translate("failed")}
+          {saveDefaultStatus === "idle" && translate("saveDefault")}
         </button>
       )}
     </div>

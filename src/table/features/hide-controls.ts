@@ -1,3 +1,4 @@
+import { translate } from "../../i18n";
 import {
   HIDE_ACTION_DATA_ATTRIBUTE,
   HIDE_INDEX_DATA_ATTRIBUTE,
@@ -16,7 +17,7 @@ function createHideButton(action: HideAction, index: number): HTMLButtonElement 
   const button = document.createElement("button");
   const labelKind = action === "hide-row" ? "row" : "column";
 
-  button.ariaLabel = `Hide ${labelKind} ${index + 1}`;
+  button.ariaLabel = translate(action === "hide-row" ? "hideRow" : "hideColumn", [index + 1]);
   button.className = `${TABLE_HIDE_BUTTON_CLASS} ${TABLE_HIDE_BUTTON_CLASS}--${labelKind}`;
   button.dataset[HIDE_ACTION_DATA_ATTRIBUTE] = action;
   button.dataset[HIDE_INDEX_DATA_ATTRIBUTE] = String(index);

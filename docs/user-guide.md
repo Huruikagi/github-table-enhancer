@@ -32,6 +32,8 @@ Open a Markdown file containing a table. Table Enhancer places a compact toolbar
 
 The toolbar provides Freeze, Filter, Copy as, Fit, Wrap, Reset, and Focus mode. When rows or columns are hidden, it also shows **Show hidden**.
 
+The extension UI follows Chrome's display language. English is the default, and Japanese is also supported. If a translated message is unavailable, the English message is shown.
+
 ## Freeze rows and columns
 
 Select **Freeze** to keep the first displayed rows and leftmost columns in view as you scroll. Enter the number of rows and columns to freeze; use **Reset** in the panel to clear only the freeze settings.

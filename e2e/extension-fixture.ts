@@ -11,6 +11,7 @@ export const fixtureUrl =
 
 type ExtensionFixtures = {
   context: BrowserContext;
+  japanesePage: Page;
   page: Page;
 };
 
@@ -22,7 +23,11 @@ export const test = base.extend<ExtensionFixtures>({
 
     const context = await chromium.launchPersistentContext(testInfo.outputPath("profile"), {
       channel: "chromium",
-      args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
+      args: [
+        "--lang=en-US",
+        `--disable-extensions-except=${extensionPath}`,
+        `--load-extension=${extensionPath}`,
+      ],
     });
 
     await use(context);
@@ -34,6 +39,25 @@ export const test = base.extend<ExtensionFixtures>({
 
     await use(page);
     await page.close();
+  },
+
+  japanesePage: async ({ browserName }, use, testInfo) => {
+    if (browserName !== "chromium") {
+      throw new Error("Chrome extension E2E tests must run with Playwright's Chromium browser.");
+    }
+
+    const context = await chromium.launchPersistentContext(testInfo.outputPath("profile-ja"), {
+      channel: "chromium",
+      args: [
+        "--lang=ja",
+        `--disable-extensions-except=${extensionPath}`,
+        `--load-extension=${extensionPath}`,
+      ],
+    });
+    const page = await context.newPage();
+
+    await use(page);
+    await context.close();
   },
 });
 

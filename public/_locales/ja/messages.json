@@ -1,0 +1,83 @@
+{
+  "extensionName": { "message": "GitHub Table Enhancer" },
+  "extensionDescription": {
+    "message": "GitHubのMarkdownファイルプレビューにある横長の表を読みやすくする非公式の拡張機能です。"
+  },
+  "clearFilter": { "message": "フィルターをクリア" },
+  "close": { "message": "閉じる" },
+  "closeFocusMode": { "message": "フォーカスモードを閉じる（Esc）" },
+  "columns": { "message": "列" },
+  "copiedFormat": {
+    "message": "$FORMAT$をコピーしました",
+    "placeholders": { "format": { "content": "$1" } }
+  },
+  "copyAs": { "message": "形式を選んでコピー" },
+  "copyFailed": { "message": "コピーできませんでした" },
+  "expand": { "message": "拡大" },
+  "expandTableView": { "message": "表を拡大表示" },
+  "failed": { "message": "失敗" },
+  "filter": { "message": "フィルター" },
+  "filterRows": { "message": "行をフィルター" },
+  "filterRowsPlaceholder": { "message": "行をフィルター..." },
+  "filterSummaryAllVisible": {
+    "message": "$TOTAL$行中$MATCHING$行",
+    "placeholders": { "matching": { "content": "$1" }, "total": { "content": "$2" } }
+  },
+  "filterSummarySomeVisible": {
+    "message": "$VISIBLE$行表示 · $MATCHING$行一致 · 全$TOTAL$行",
+    "placeholders": {
+      "visible": { "content": "$1" },
+      "matching": { "content": "$2" },
+      "total": { "content": "$3" }
+    }
+  },
+  "fit": { "message": "列幅を調整" },
+  "fitColumns": { "message": "列幅を内容に合わせる" },
+  "focusMode": { "message": "フォーカスモード" },
+  "focusModeInstructionAfter": { "message": "キー" },
+  "focusModeInstructionBefore": { "message": "戻るには" },
+  "freeze": { "message": "固定" },
+  "frozenColumns": { "message": "固定する列数" },
+  "frozenRows": { "message": "固定する行数" },
+  "hideColumn": {
+    "message": "$NUMBER$列目を非表示",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "hideRow": {
+    "message": "$NUMBER$行目を非表示",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "invalidRegularExpression": { "message": "正規表現が無効です" },
+  "matchingRowHidden": {
+    "message": "一致する$COUNT$行が非表示です。",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "matchingRowsHidden": {
+    "message": "一致する$COUNT$行が非表示です。",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "noRowsMatchFilter": { "message": "一致する行はありません。" },
+  "reset": { "message": "リセット" },
+  "resetTableView": { "message": "表の表示をリセット" },
+  "resizeColumn": {
+    "message": "$NUMBER$列目の幅を変更",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "rows": { "message": "行" },
+  "saveDefault": { "message": "既定値として保存" },
+  "saved": { "message": "保存しました" },
+  "saving": { "message": "保存中..." },
+  "showHidden": { "message": "非表示を戻す" },
+  "showHiddenRowsAndColumns": { "message": "非表示の行と列を戻す" },
+  "sortByColumn": {
+    "message": "$NUMBER$列目で並べ替え",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "sortByColumnHint": {
+    "message": "$LABEL$（昇順、降順、元の順）",
+    "placeholders": { "label": { "content": "$1" } }
+  },
+  "useRegularExpression": { "message": "正規表現を使用" },
+  "wrap": { "message": "折り返し" },
+  "wrapColumns": { "message": "セル内で折り返す" }
+}

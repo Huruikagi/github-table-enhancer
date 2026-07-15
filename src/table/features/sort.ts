@@ -1,3 +1,4 @@
+import { translate } from "../../i18n";
 import {
   ORIGINAL_ROW_INDEX_DATA_ATTRIBUTE,
   SORT_COLUMN_INDEX_DATA_ATTRIBUTE,
@@ -85,10 +86,10 @@ export function applyTableSort(table: HTMLTableElement, sort: TableSort): void {
 
 function createSortButton(columnIndex: number): HTMLButtonElement {
   const button = document.createElement("button");
-  button.ariaLabel = `Sort by column ${columnIndex + 1}`;
+  button.ariaLabel = translate("sortByColumn", [columnIndex + 1]);
   button.className = TABLE_SORT_BUTTON_CLASS;
   button.dataset[SORT_COLUMN_INDEX_DATA_ATTRIBUTE] = String(columnIndex);
-  button.title = `${button.ariaLabel} (ascending, descending, original order)`;
+  button.title = translate("sortByColumnHint", [button.ariaLabel]);
   button.type = "button";
   button.textContent = "⇅";
   return button;

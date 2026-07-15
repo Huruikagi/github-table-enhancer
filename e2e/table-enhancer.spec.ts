@@ -130,6 +130,30 @@ test("enhances GitHub Markdown blob tables from the loaded extension", async ({ 
   await expect(firstWrapper.locator("table")).toHaveAttribute("data-github-table-enhancer", "true");
 });
 
+test("localizes browser-visible controls in Japanese", async ({ japanesePage }) => {
+  await japanesePage.route(fixtureUrl, async (route) => {
+    await route.fulfill({
+      body: githubBlobFixture,
+      contentType: "text/html",
+    });
+  });
+  await japanesePage.goto(fixtureUrl);
+
+  const wrapper = japanesePage.locator(".github-table-enhancer-scroll").first();
+  await expect(wrapper.getByRole("button", { name: "固定" })).toBeVisible();
+  await expect(wrapper.getByRole("button", { name: "フィルター" })).toHaveAttribute(
+    "title",
+    "行をフィルター",
+  );
+  await expect(wrapper.getByRole("button", { name: "2列目で並べ替え" })).toBeAttached();
+
+  await wrapper.getByRole("button", { name: "フィルター" }).click();
+  await expect(wrapper.getByLabel("行をフィルター")).toHaveAttribute(
+    "placeholder",
+    "行をフィルター...",
+  );
+});
+
 test("filters rows and resets the current table view", async ({ page }) => {
   await page.goto(fixtureUrl);
 
