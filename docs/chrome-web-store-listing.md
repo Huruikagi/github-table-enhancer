@@ -6,18 +6,28 @@ An unofficial extension that makes wide tables easier to read in GitHub Markdown
 
 ## Detailed Description
 
-Table Enhancer for GitHub is a small, unofficial Chrome extension for GitHub Markdown blob pages.
+Review Markdown tables on GitHub blob pages without losing the row, column, or cell you are trying to compare. Table Enhancer for GitHub adds an in-page toolbar to each supported table, so the table stays close to GitHub's native preview while gaining controls for large datasets, release notes, matrices, and long reference tables.
 
-It improves wide Markdown tables in file previews by keeping them readable inside a horizontal scroll container. Compact controls let you freeze displayed rows and columns, hide rows or columns temporarily, filter rows with text or regular expressions, and sort body rows from column headers. You can copy the currently visible table as Markdown, CSV, or TSV, fit or resize columns, and open an individual table in a full-window Focus mode. A reset control returns temporary table changes to their initial state.
+What you can do:
 
-Current scope:
+- Keep context while scrolling: place a table in a horizontal scroll container and freeze displayed header rows or leading columns.
+- Save preferred freeze defaults: store repository-specific, heading-based Freeze settings locally with Chrome storage.
+- Narrow the rows you see: filter table rows with plain text or regular expressions.
+- Compare values quickly: sort body rows from column headers without editing the source Markdown.
+- Reduce visual noise: temporarily hide rows or columns, then restore them when needed.
+- Adjust layout: fit columns, resize individual columns, and wrap or unwrap cell content.
+- Export the current view: copy the visible table as Markdown, CSV, or TSV.
+- Focus on one table: open a selected table in a full-window Focus mode for a cleaner review surface.
+- Start over safely: reset temporary table changes back to the initial rendered state.
 
-- Works on GitHub Markdown blob file preview pages, such as `https://github.com/owner/repo/blob/main/docs/file.md`.
+Designed scope:
+
+- Runs on GitHub Markdown blob file preview pages, such as `https://github.com/owner/repo/blob/main/docs/file.md`.
 - Does not run on issues, pull requests, discussions, repository README landing pages, or rendered Markdown outside GitHub blob views.
-- Uses a content script on GitHub Markdown blob pages and the `storage` permission for local repository-specific, heading-based freeze defaults.
+- Uses a GitHub blob-page content script and the `storage` permission only for local Freeze defaults.
 - Does not collect, transmit, sell, or share user data.
 
-This project is not affiliated with, sponsored by, or endorsed by GitHub.
+Table Enhancer for GitHub is an independent project and is not affiliated with, sponsored by, or endorsed by GitHub.
 
 ## v1.2.0 Update Checklist
 
