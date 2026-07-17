@@ -24,7 +24,7 @@
     "build:prod": "pnpm build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.2",
+    "@biomejs/biome": "^2.5.3",
     "@playwright/test": "^1.61.1",
     "chrome-types": "^0.1.434",
     "esbuild": "^0.28.1",
