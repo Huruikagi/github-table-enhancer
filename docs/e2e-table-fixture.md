@@ -23,7 +23,7 @@ The separate `pnpm demo:video` command records the store presentation scenario. 
 - Clicking a hide button should remove that displayed row or column without changing the surrounding GitHub layout.
 - Clicking a column header sort button should cycle body rows through ascending, descending, and original Markdown order while leaving header rows in place.
 - Show hidden should restore hidden rows and columns.
-- Clicking Filter should show and focus a Filter rows input. Typing a runtime, package, status, or keyword should temporarily show only matching body rows while keeping header rows visible. Near the right edge, the panel should flip horizontally instead of extending outside the viewport.
+- Clicking Filter should show and focus a Filter rows input. Typing a runtime, package, status, or keyword should temporarily show only matching body rows while keeping header rows visible. The panel should remain below its button and wrap its contents instead of growing excessively wide.
 - The Filter panel should show the matching and visible row counts. When no rows remain, the table should show whether no rows match or all matching rows were manually hidden, with actions to clear the filter or restore hidden rows.
 - The `.*` button should toggle regular-expression matching. A valid expression should match rows case-insensitively, while an invalid expression should show an error and leave all rows visible.
 - Pressing Escape inside Freeze, Filter, or Copy as should close the popup and return focus to its button.

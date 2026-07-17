@@ -183,7 +183,7 @@ test("filters rows and resets the current table view", async ({ page }) => {
   await expect(table).not.toHaveAttribute("data-github-table-enhancer-wrapped-columns", "true");
 });
 
-test("keeps an expanded filter panel inside the viewport", async ({ page }) => {
+test("keeps an expanded filter panel visible with a capped width", async ({ page }) => {
   await page.setViewportSize({ width: 600, height: 720 });
   await page.goto(fixtureUrl);
 
@@ -194,15 +194,15 @@ test("keeps an expanded filter panel inside the viewport", async ({ page }) => {
   const panel = wrapper.locator(".github-table-enhancer-controls-panel");
   await expect(panel).toBeVisible();
 
+  const filterButtonBox = await wrapper
+    .getByRole("button", { name: "Filter", exact: true })
+    .boundingBox();
   const panelBox = await panel.boundingBox();
-  if (!panelBox) {
-    throw new Error("Expected the filter panel to have a layout box");
+  if (!filterButtonBox || !panelBox) {
+    throw new Error("Expected the Filter button and panel to have layout boxes");
   }
-  const viewportSize = page.viewportSize();
-  if (!viewportSize) {
-    throw new Error("Expected the page to have a viewport size");
-  }
-  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(viewportSize.width + 1);
+  expect(panelBox.y).toBeGreaterThanOrEqual(filterButtonBox.y + filterButtonBox.height);
+  expect(panelBox.width).toBeLessThanOrEqual(360);
 });
 
 test("explains why a filter leaves no visible rows", async ({ page }) => {

@@ -191,19 +191,20 @@ body.github-table-enhancer-focus-mode-open {
   border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
   border-radius: 6px;
   box-shadow: var(--shadow-floating-small, 0 8px 24px rgb(140 149 159 / 20%));
+  box-sizing: border-box;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  max-width: min(360px, calc(100vw - 16px));
   padding: 6px;
-  position: fixed;
-  position-area: block-end span-inline-end;
-  justify-self: start;
+  position: absolute;
+  left: anchor(left);
+  top: anchor(bottom);
   margin-block-start: 4px;
-  position-try-fallbacks: flip-inline;
   z-index: 6;
 }
 
 .github-table-enhancer-controls-panel--freeze {
-  flex-wrap: wrap;
   max-width: calc(100vw - 16px);
 }
 
