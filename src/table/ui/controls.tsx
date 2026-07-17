@@ -182,6 +182,40 @@ function TableControls({
     };
   }, [openPanel]);
 
+  useLayoutEffect(() => {
+    if (openPanel === null) {
+      return;
+    }
+
+    const panel = panelRef.current;
+    const activeToggle =
+      openPanel === "copy"
+        ? copyToggleRef.current
+        : openPanel === "filter"
+          ? filterToggleRef.current
+          : freezeToggleRef.current;
+    const containingBlock = panel?.offsetParent;
+    if (!panel || !activeToggle || !(containingBlock instanceof HTMLElement)) {
+      return;
+    }
+
+    const positionPanel = (): void => {
+      const maximumLeft = Math.max(0, containingBlock.clientWidth - panel.offsetWidth);
+      panel.style.left = `${Math.min(activeToggle.offsetLeft, maximumLeft)}px`;
+    };
+
+    positionPanel();
+    window.addEventListener("resize", positionPanel);
+    const resizeObserver = new ResizeObserver(positionPanel);
+    resizeObserver.observe(containingBlock);
+    resizeObserver.observe(panel);
+
+    return () => {
+      window.removeEventListener("resize", positionPanel);
+      resizeObserver.disconnect();
+    };
+  }, [openPanel]);
+
   useTableFocusMode(table, isFocusMode, setIsFocusMode, focusToggleRef);
 
   const closeFreezePanel = (): void => {

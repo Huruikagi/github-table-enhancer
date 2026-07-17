@@ -202,7 +202,8 @@ test("keeps an expanded filter panel visible with a capped width", async ({ page
     .getByRole("button", { name: "Filter", exact: true })
     .boundingBox();
   const panelBox = await panel.boundingBox();
-  if (!inputBox || !regularExpressionButtonBox || !filterButtonBox || !panelBox) {
+  const wrapperBox = await wrapper.boundingBox();
+  if (!inputBox || !regularExpressionButtonBox || !filterButtonBox || !panelBox || !wrapperBox) {
     throw new Error("Expected the Filter controls and panel to have layout boxes");
   }
   const inputCenterY = inputBox.y + inputBox.height / 2;
@@ -211,6 +212,8 @@ test("keeps an expanded filter panel visible with a capped width", async ({ page
   expect(Math.abs(regularExpressionButtonCenterY - inputCenterY)).toBeLessThanOrEqual(1);
   expect(panelBox.y).toBeGreaterThanOrEqual(filterButtonBox.y + filterButtonBox.height);
   expect(panelBox.width).toBeLessThanOrEqual(360);
+  expect(panelBox.x).toBeLessThanOrEqual(filterButtonBox.x);
+  expect(panelBox.x + panelBox.width).toBeLessThanOrEqual(wrapperBox.x + wrapperBox.width);
 });
 
 test("explains why a filter leaves no visible rows", async ({ page }) => {

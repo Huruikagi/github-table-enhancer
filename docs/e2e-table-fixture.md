@@ -34,6 +34,7 @@ The separate `pnpm demo:video` command records the store presentation scenario. 
 - Clicking the Copy as icon control should offer Markdown, CSV, and TSV copy actions. Its accessible name and tooltip should be `Copy as`.
 - Copy as should copy only the current visible table view, excluding hidden rows, filtered rows, and hidden columns.
 - Opening Freeze, Filter, or Copy as while another panel is open should close the previously open panel.
+- Freeze, Filter, and Copy as panels should open from the left edge of their button, shifting left only as far as needed to remain inside the table's scroll area.
 - Setting frozen rows should keep the first N displayed rows visible while scrolling vertically.
 - Frozen rows should stay visually contained to the table area and should not cover GitHub file action controls while the page itself scrolls.
 - Frozen cells should keep normal-weight table grid lines visible while covering scrolled content behind them.
