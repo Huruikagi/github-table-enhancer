@@ -138,44 +138,46 @@ export function FilterPanel({
 }: FilterPanelProps): VNode {
   return (
     <div className={TABLE_CONTROLS_PANEL_CLASS} ref={panelRef} style={{ positionAnchor }}>
-      <label htmlFor={`${inputIdPrefix}-filter`}>
-        {translate("filterRows")}
-        <input
-          aria-describedby={
-            filterRegularExpressionError
-              ? `${inputIdPrefix}-filter-error`
-              : resultSummary
-                ? `${inputIdPrefix}-filter-summary`
-                : undefined
-          }
-          aria-invalid={filterRegularExpressionError ? "true" : undefined}
-          aria-label={translate("filterRows")}
-          id={`${inputIdPrefix}-filter`}
-          onInput={(event) => onFilterQueryChange(event.currentTarget.value)}
-          onKeyDown={(event) => {
-            if (event.key !== "Escape") {
-              return;
+      <div className="github-table-enhancer-filter-query-row">
+        <label htmlFor={`${inputIdPrefix}-filter`}>
+          {translate("filterRows")}
+          <input
+            aria-describedby={
+              filterRegularExpressionError
+                ? `${inputIdPrefix}-filter-error`
+                : resultSummary
+                  ? `${inputIdPrefix}-filter-summary`
+                  : undefined
             }
+            aria-invalid={filterRegularExpressionError ? "true" : undefined}
+            aria-label={translate("filterRows")}
+            id={`${inputIdPrefix}-filter`}
+            onInput={(event) => onFilterQueryChange(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              if (event.key !== "Escape") {
+                return;
+              }
 
-            event.preventDefault();
-            event.stopPropagation();
-            onEscape();
-          }}
-          placeholder={translate("filterRowsPlaceholder")}
-          ref={filterInputRef}
-          type="search"
-          value={filterQuery}
-        />
-      </label>
-      <button
-        aria-label={translate("useRegularExpression")}
-        aria-pressed={filterUsesRegularExpression}
-        onClick={() => onFilterUsesRegularExpressionChange(!filterUsesRegularExpression)}
-        title={translate("useRegularExpression")}
-        type="button"
-      >
-        .*
-      </button>
+              event.preventDefault();
+              event.stopPropagation();
+              onEscape();
+            }}
+            placeholder={translate("filterRowsPlaceholder")}
+            ref={filterInputRef}
+            type="search"
+            value={filterQuery}
+          />
+        </label>
+        <button
+          aria-label={translate("useRegularExpression")}
+          aria-pressed={filterUsesRegularExpression}
+          onClick={() => onFilterUsesRegularExpressionChange(!filterUsesRegularExpression)}
+          title={translate("useRegularExpression")}
+          type="button"
+        >
+          .*
+        </button>
+      </div>
       {filterRegularExpressionError && (
         <span id={`${inputIdPrefix}-filter-error`} role="alert">
           {filterRegularExpressionError}

@@ -208,6 +208,24 @@ body.github-table-enhancer-focus-mode-open {
   max-width: calc(100vw - 16px);
 }
 
+.github-table-enhancer-filter-query-row {
+  align-items: center;
+  display: flex;
+  flex-basis: 100%;
+  gap: 8px;
+  min-width: 0;
+}
+
+.github-table-enhancer-filter-query-row label {
+  flex: 1;
+  min-width: 0;
+}
+
+.github-table-enhancer-filter-query-row input[type="search"] {
+  flex: 1;
+  min-width: 0;
+}
+
 .github-table-enhancer-controls-panel label {
   align-items: center;
   color: var(--fgColor-muted, var(--color-fg-muted, #57606a));

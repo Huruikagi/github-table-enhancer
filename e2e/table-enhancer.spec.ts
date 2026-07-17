@@ -194,13 +194,21 @@ test("keeps an expanded filter panel visible with a capped width", async ({ page
   const panel = wrapper.locator(".github-table-enhancer-controls-panel");
   await expect(panel).toBeVisible();
 
+  const inputBox = await wrapper.getByLabel("Filter rows").boundingBox();
+  const regularExpressionButtonBox = await wrapper
+    .getByRole("button", { name: "Use regular expression" })
+    .boundingBox();
   const filterButtonBox = await wrapper
     .getByRole("button", { name: "Filter", exact: true })
     .boundingBox();
   const panelBox = await panel.boundingBox();
-  if (!filterButtonBox || !panelBox) {
-    throw new Error("Expected the Filter button and panel to have layout boxes");
+  if (!inputBox || !regularExpressionButtonBox || !filterButtonBox || !panelBox) {
+    throw new Error("Expected the Filter controls and panel to have layout boxes");
   }
+  const inputCenterY = inputBox.y + inputBox.height / 2;
+  const regularExpressionButtonCenterY =
+    regularExpressionButtonBox.y + regularExpressionButtonBox.height / 2;
+  expect(Math.abs(regularExpressionButtonCenterY - inputCenterY)).toBeLessThanOrEqual(1);
   expect(panelBox.y).toBeGreaterThanOrEqual(filterButtonBox.y + filterButtonBox.height);
   expect(panelBox.width).toBeLessThanOrEqual(360);
 });
