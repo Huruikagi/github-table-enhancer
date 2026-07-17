@@ -194,10 +194,11 @@ body.github-table-enhancer-focus-mode-open {
   display: flex;
   gap: 8px;
   padding: 6px;
-  position: absolute;
-  left: anchor(left);
-  top: anchor(bottom);
+  position: fixed;
+  position-area: block-end span-inline-end;
+  justify-self: start;
   margin-block-start: 4px;
+  position-try-fallbacks: flip-inline;
   z-index: 6;
 }
 
