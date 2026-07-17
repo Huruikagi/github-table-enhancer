@@ -258,7 +258,15 @@ describe("wrapTable", () => {
       "Expand",
     ]);
 
-    for (const label of ["Filter", "Fit", "Wrap", "Reset table view", "Expand"]) {
+    for (const label of [
+      "Freeze",
+      "Filter",
+      "Copy as",
+      "Fit",
+      "Wrap",
+      "Reset table view",
+      "Expand",
+    ]) {
       const button = getButton(label);
       expect(button.title).not.toBe("");
       expect(button.querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");

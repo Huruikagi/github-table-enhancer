@@ -9,7 +9,7 @@ The separate `pnpm demo:video` command records the store presentation scenario. 
 - Each table should remain readable inside the GitHub Markdown preview.
 - Wide tables should scroll horizontally instead of forcing every column to become narrow.
 - Normal-width tables should still look like regular GitHub Markdown tables.
-- Each enhanced table should show a compact Freeze control above the table.
+- Each enhanced table should show a compact Freeze icon control above the table. Its accessible name and tooltip should be `Freeze`.
 - Opening the Freeze control should show a popup below the button with inputs for frozen rows and frozen columns. The focused input selects its existing value; valid Rows input moves focus to Columns, and valid Columns input moves focus to Save default when that button is available. Both values are capped at 5.
 - Tables with a preceding heading should show a Save default button in the Freeze control. Saved defaults apply only within the current repository.
 - Tables without a preceding heading should not offer Save default.
@@ -31,7 +31,7 @@ The separate `pnpm demo:video` command records the store presentation scenario. 
 - Icon-only controls should expose a descriptive tooltip on hover and an accessible name to assistive technology.
 - Controls should be ordered by task: Freeze, Filter, Copy as, Fit, Wrap, restore/reset actions, then Expand.
 - Clear filter should restore rows hidden only by the filter, while manually hidden rows remain hidden until Show hidden is clicked.
-- Clicking Copy as should offer Markdown, CSV, and TSV copy actions.
+- Clicking the Copy as icon control should offer Markdown, CSV, and TSV copy actions. Its accessible name and tooltip should be `Copy as`.
 - Copy as should copy only the current visible table view, excluding hidden rows, filtered rows, and hidden columns.
 - Opening Freeze, Filter, or Copy as while another panel is open should close the previously open panel.
 - Setting frozen rows should keep the first N displayed rows visible while scrolling vertically.

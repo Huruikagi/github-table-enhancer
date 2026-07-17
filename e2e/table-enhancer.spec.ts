@@ -228,7 +228,7 @@ test("explains why a filter leaves no visible rows", async ({ page }) => {
 
   await filterInput.fill("rebuilt content script is active");
   const matchingRow = wrapper.locator("tbody tr").nth(2);
-  await matchingRow.hover();
+  await matchingRow.locator("td").first().hover();
   await matchingRow.getByRole("button", { name: /Hide row/ }).click();
 
   await expect(wrapper.getByRole("status")).toContainText("1 matching row is hidden.");

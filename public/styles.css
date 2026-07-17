@@ -198,7 +198,7 @@ body.github-table-enhancer-focus-mode-open {
   max-width: min(360px, calc(100vw - 16px));
   padding: 6px;
   position: absolute;
-  left: anchor(left);
+  right: anchor(right);
   top: anchor(bottom);
   margin-block-start: 4px;
   z-index: 6;

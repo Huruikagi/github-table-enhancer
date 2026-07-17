@@ -227,13 +227,15 @@ function TableControls({
       )}
       <button
         aria-expanded={openPanel === "freeze"}
+        aria-label={translate("freeze")}
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleFreezePanel}
         ref={freezeToggleRef}
         style={{ anchorName: `${anchorPrefix}-freeze` }}
+        title={translate("freeze")}
         type="button"
       >
-        {translate("freeze")}
+        <ControlIcon kind="freeze" />
       </button>
       <button
         aria-expanded={openPanel === "filter"}
@@ -249,13 +251,15 @@ function TableControls({
       </button>
       <button
         aria-expanded={openPanel === "copy"}
+        aria-label={translate("copyAs")}
         className={TABLE_CONTROLS_TOGGLE_CLASS}
         onClick={toggleCopyPanel}
         ref={copyToggleRef}
         style={{ anchorName: `${anchorPrefix}-copy` }}
+        title={translate("copyAs")}
         type="button"
       >
-        {translate("copyAs")}
+        <ControlIcon kind="copy" />
       </button>
       <button
         aria-label={translate("fit")}
